@@ -52,6 +52,11 @@ namespace Infrastructure.Repositories.TutorRepository
             _context.ProjectGroups.Update(group);
         }
 
+        public async Task DeleteProjectGroupAsync(ProjectGroup group)
+        {
+            _context.ProjectGroups.Remove(group);
+        }
+
         public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();

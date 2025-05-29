@@ -11,5 +11,6 @@ namespace Application.Interface.TutorInterface
     {
         Task<string> CreateProjectGroupAsync(ProjectGroupCreateDto dto);
         Task<string> UpdateProjectGroupAsync(int groupId, ProjectGroupCreateDto dto);
+        Task<string> DeleteProjectGroupAsync(int groupId);
     }
 }

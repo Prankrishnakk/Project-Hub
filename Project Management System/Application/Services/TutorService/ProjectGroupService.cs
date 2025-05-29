@@ -1,5 +1,6 @@
 ﻿using Application.Dto;
 using Application.Interface.TutorInterface;
+using AutoMapper;
 using Domain.Model;
 using System;
 using System.Collections.Generic;
@@ -12,34 +13,41 @@ namespace Application.Services.TutorService
     public class ProjectGroupService : IProjectGroupService
     {
         private readonly IProjectGroupRepository _repository;
+        private readonly IMapper _mapper;
 
-        public ProjectGroupService(IProjectGroupRepository repository)
+        public ProjectGroupService(IProjectGroupRepository repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
 
         public async Task<string> CreateProjectGroupAsync(ProjectGroupCreateDto dto)
         {
-            if (dto.StudentIds.Count < 4 || dto.StudentIds.Count > 6)
-                return "Group must contain 4 to 6 students.";
-
-            var students = await _repository.GetUngroupedStudentsAsync(dto.StudentIds);
-
-            if (students.Count != dto.StudentIds.Count)
-                return "Some students are already in a group or not found.";
-
-            var group = new ProjectGroup
+            try
             {
-                GroupName = dto.GroupName,
-                ProjectTitle = dto.ProjectTitle,
-                Students = students
-            };
+                if (dto.StudentIds.Count < 4 || dto.StudentIds.Count > 6)
+                    return "Group must contain 4 to 6 students.";
 
-            await _repository.AddProjectGroupAsync(group);
-            await _repository.SaveAsync();
+                var students = await _repository.GetUngroupedStudentsAsync(dto.StudentIds);
 
-            return "Project group created successfully.";
+                if (students.Count != dto.StudentIds.Count)
+                    return "Some students are already in a group or not found.";
+
+                var group = _mapper.Map<ProjectGroup>(dto);
+                group.Students = students;
+
+
+                await _repository.AddProjectGroupAsync(group);
+                await _repository.SaveAsync();
+
+                return "Project group created successfully.";
+            }
+            catch (Exception ex)
+            {
+                return $"Error creating project group: {ex.Message}";
+            }
         }
+
         public async Task<string> UpdateProjectGroupAsync(int groupId, ProjectGroupCreateDto dto)
         {
             try
@@ -48,15 +56,12 @@ namespace Application.Services.TutorService
                 if (existingGroup == null)
                     return "Project group not found.";
 
-                // Update GroupName if provided
                 if (!string.IsNullOrWhiteSpace(dto.GroupName))
                     existingGroup.GroupName = dto.GroupName;
 
-                // Update ProjectTitle if provided
                 if (!string.IsNullOrWhiteSpace(dto.ProjectTitle))
                     existingGroup.ProjectTitle = dto.ProjectTitle;
 
-                // Update students only if provided
                 if (dto.StudentIds != null && dto.StudentIds.Count > 0)
                 {
                     if (dto.StudentIds.Count < 4 || dto.StudentIds.Count > 6)
@@ -81,9 +86,28 @@ namespace Application.Services.TutorService
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error updating project group: {ex.Message}");
+                return $"Error updating project group: {ex.Message}";
             }
         }
 
+        public async Task<string> DeleteProjectGroupAsync(int groupId)
+        {
+            try
+            {
+                var group = await _repository.GetProjectGroupByIdAsync(groupId);
+                if (group == null)
+                    return "Project group not found.";
+
+                await _repository.DeleteProjectGroupAsync(group);
+                await _repository.SaveAsync();
+
+                return "Project group and its students deleted successfully.";
+            }
+            catch (Exception ex)
+            {
+                return $"Error deleting project group: {ex.Message}";
+            }
+        }
     }
+
 }

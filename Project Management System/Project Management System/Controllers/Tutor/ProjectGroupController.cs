@@ -36,7 +36,7 @@ namespace Project_Management_System.Controllers.Tutor
                 return StatusCode(500, new ApiResponse<string>(null, $"Internal Server Error: {ex.Message}", false));
             }
         }
-        [HttpPut("update/{groupId}")]
+        [HttpPatch("update/{groupId}")]
         [Authorize(Roles = "Tutor")]
         public async Task<IActionResult> UpdateProjectGroup(int groupId, [FromBody] ProjectGroupCreateDto dto)
         {
@@ -53,6 +53,25 @@ namespace Project_Management_System.Controllers.Tutor
                 return success
                     ? Ok(new ApiResponse<string>(result, result, true))
                     : BadRequest(new ApiResponse<string>(null, result, false));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<string>(null, $"Internal Server Error: {ex.Message}", false));
+            }
+        }
+        [HttpDelete("delete/{groupId}")]
+        [Authorize(Roles = "Tutor")]
+        public async Task<IActionResult> DeleteProjectGroup(int groupId)
+        {
+            try
+            {
+                var result = await _service.DeleteProjectGroupAsync(groupId);
+
+                bool success = result == "Project group and its students deleted successfully.";
+
+                return success
+                    ? Ok(new ApiResponse<string>(result, result, true))
+                    : NotFound(new ApiResponse<string>(null, result, false));
             }
             catch (Exception ex)
             {

@@ -14,7 +14,8 @@ namespace Application.Mapper
     {
         public MappingProfile()
         {
-            CreateMap<StudentRegDto, Student>();
+            CreateMap<StudentRegDto, Student>().ReverseMap();
+            CreateMap<ProjectGroupCreateDto, ProjectGroup>().ReverseMap();
                 
         }
     }
