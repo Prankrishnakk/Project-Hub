@@ -17,7 +17,7 @@ namespace Project_Management_System.Controllers.Tutor
         {
             _service = service;
         }
-        [HttpPost("create")]
+        [HttpPost("create -Tutor")]
         [Authorize(Roles = "Tutor")]
 
         public async Task<IActionResult> CreateProjectGroup([FromForm] ProjectGroupCreateDto dto)
@@ -36,7 +36,7 @@ namespace Project_Management_System.Controllers.Tutor
                 return StatusCode(500, new ApiResponse<string>(null, $"Internal Server Error: {ex.Message}", false));
             }
         }
-        [HttpPatch("update/{groupId}")]
+        [HttpPatch("update-Tutor/{groupId}")]
         [Authorize(Roles = "Tutor")]
         public async Task<IActionResult> UpdateProjectGroup(int groupId, [FromBody] ProjectGroupCreateDto dto)
         {
@@ -59,7 +59,7 @@ namespace Project_Management_System.Controllers.Tutor
                 return StatusCode(500, new ApiResponse<string>(null, $"Internal Server Error: {ex.Message}", false));
             }
         }
-        [HttpDelete("delete/{groupId}")]
+        [HttpDelete("delete-Tutor/{groupId}")]
         [Authorize(Roles = "Tutor")]
         public async Task<IActionResult> DeleteProjectGroup(int groupId)
         {

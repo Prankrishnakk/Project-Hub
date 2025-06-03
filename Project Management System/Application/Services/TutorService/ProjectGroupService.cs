@@ -25,8 +25,8 @@ namespace Application.Services.TutorService
         {
             try
             {
-                if (dto.StudentIds.Count < 4 || dto.StudentIds.Count > 6)
-                    return "Group must contain 4 to 6 students.";
+                if (dto.StudentIds.Count < 2)
+                   return "Project group must contain at least 2 students.";
 
                 var students = await _repository.GetUngroupedStudentsAsync(dto.StudentIds);
 
@@ -64,8 +64,8 @@ namespace Application.Services.TutorService
 
                 if (dto.StudentIds != null && dto.StudentIds.Count > 0)
                 {
-                    if (dto.StudentIds.Count < 4 || dto.StudentIds.Count > 6)
-                        return "Group must contain 4 to 6 students.";
+                    if (dto.StudentIds.Count < 2)
+                        return "Project group must contain at least 2 students.";
 
                     var students = await _repository.GetUngroupedOrBelongToGroupAsync(dto.StudentIds, groupId);
 
