@@ -18,5 +18,9 @@ namespace Domain.Model
         public bool IsBlocked { get; set; }
         public virtual ProjectGroup? Group { get; set; }
 
+        // ➕ Add this if the student is a tutor
+        public virtual ICollection<ProjectGroup> TutoredGroups { get; set; }
+
+
     }
 }

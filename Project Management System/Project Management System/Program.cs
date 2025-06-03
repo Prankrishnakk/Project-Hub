@@ -1,11 +1,14 @@
 
 using Application.Interface.AuthInterface;
+using Application.Interface.HodInterface;
 using Application.Interface.TutorInterface;
 using Application.Mapper;
 using Application.Services.AuthServices;
+using Application.Services.HodService;
 using Application.Services.TutorService;
 using Infrastructure.Context;
 using Infrastructure.Repositories.AuthRepository;
+using Infrastructure.Repositories.HodRepository;
 using Infrastructure.Repositories.TutorRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +31,11 @@ namespace Project_Management_System
             builder.Services.AddScoped<IStudentAuthService, StudentAuthService>();
             builder.Services.AddScoped<IProjectGroupRepository, ProjectGroupRepository>();
             builder.Services.AddScoped<IProjectGroupService, ProjectGroupService>();
-           
+            builder.Services.AddScoped<IGetDepartmentGroupsRepository, GetDepartmentGroupsRepository>();
+            builder.Services.AddScoped<IGetDepartmentGroupsService, GetDepartmentGroupsService>();
+
+
+
 
 
 

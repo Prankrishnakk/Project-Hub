@@ -4,13 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Application.Dto
 {
-    public class ProjectGroupCreateDto
+    public class DepartmentProjectGroupDto
     {
-        public int TutorId { get; set; }
+        public int GroupId { get; set; }
         public string GroupName { get; set; }
         public string ProjectTitle { get; set; }
-        public List<int> StudentIds { get; set; }
+        public string TutorName { get; set; }
+        public List<string> StudentNames { get; set; }
     }
 }
+

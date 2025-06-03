@@ -2,8 +2,9 @@
 using Application.Dto;
 using Application.Interface.TutorInterface;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace Project_Management_System.Controllers.Tutor
 {
@@ -17,15 +18,14 @@ namespace Project_Management_System.Controllers.Tutor
         {
             _service = service;
         }
-        [HttpPost("create -Tutor")]
-        [Authorize(Roles = "Tutor")]
 
+        [HttpPost("create-Tutor")]
+        [Authorize(Roles = "Tutor")]
         public async Task<IActionResult> CreateProjectGroup([FromForm] ProjectGroupCreateDto dto)
         {
             try
             {
                 var result = await _service.CreateProjectGroupAsync(dto);
-
                 var success = result == "Project group created successfully.";
                 var response = new ApiResponse<string>(result, result, success);
 
@@ -36,6 +36,7 @@ namespace Project_Management_System.Controllers.Tutor
                 return StatusCode(500, new ApiResponse<string>(null, $"Internal Server Error: {ex.Message}", false));
             }
         }
+
         [HttpPatch("update-Tutor/{groupId}")]
         [Authorize(Roles = "Tutor")]
         public async Task<IActionResult> UpdateProjectGroup(int groupId, [FromBody] ProjectGroupCreateDto dto)
@@ -45,11 +46,9 @@ namespace Project_Management_System.Controllers.Tutor
                 if (dto == null)
                     return BadRequest(new ApiResponse<string>(null, "Invalid input data", false));
 
-                // No need to check for GroupName/Title/StudentIds presence here, let the service handle what to update
-
                 var result = await _service.UpdateProjectGroupAsync(groupId, dto);
-
                 bool success = result == "Project group updated successfully.";
+
                 return success
                     ? Ok(new ApiResponse<string>(result, result, true))
                     : BadRequest(new ApiResponse<string>(null, result, false));
@@ -59,6 +58,7 @@ namespace Project_Management_System.Controllers.Tutor
                 return StatusCode(500, new ApiResponse<string>(null, $"Internal Server Error: {ex.Message}", false));
             }
         }
+
         [HttpDelete("delete-Tutor/{groupId}")]
         [Authorize(Roles = "Tutor")]
         public async Task<IActionResult> DeleteProjectGroup(int groupId)
@@ -66,7 +66,6 @@ namespace Project_Management_System.Controllers.Tutor
             try
             {
                 var result = await _service.DeleteProjectGroupAsync(groupId);
-
                 bool success = result == "Project group and its students deleted successfully.";
 
                 return success
@@ -78,8 +77,5 @@ namespace Project_Management_System.Controllers.Tutor
                 return StatusCode(500, new ApiResponse<string>(null, $"Internal Server Error: {ex.Message}", false));
             }
         }
-
-
     }
 }
-

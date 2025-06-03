@@ -26,6 +26,11 @@ namespace Infrastructure.Context
                 .WithMany(g => g.Students)
                 .HasForeignKey(s => s.GroupId)
                 .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<ProjectGroup>()
+    .HasOne(pg => pg.Tutor)
+    .WithMany(t => t.TutoredGroups)
+    .HasForeignKey(pg => pg.TutorId)
+    .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

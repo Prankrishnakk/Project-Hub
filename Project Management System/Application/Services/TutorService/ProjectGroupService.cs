@@ -4,8 +4,6 @@ using AutoMapper;
 using Domain.Model;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Services.TutorService
@@ -26,7 +24,7 @@ namespace Application.Services.TutorService
             try
             {
                 if (dto.StudentIds.Count < 2)
-                   return "Project group must contain at least 2 students.";
+                    return "Project group must contain at least 2 students.";
 
                 var students = await _repository.GetUngroupedStudentsAsync(dto.StudentIds);
 
@@ -35,7 +33,7 @@ namespace Application.Services.TutorService
 
                 var group = _mapper.Map<ProjectGroup>(dto);
                 group.Students = students;
-
+                group.TutorId = dto.TutorId;
 
                 await _repository.AddProjectGroupAsync(group);
                 await _repository.SaveAsync();
@@ -61,6 +59,9 @@ namespace Application.Services.TutorService
 
                 if (!string.IsNullOrWhiteSpace(dto.ProjectTitle))
                     existingGroup.ProjectTitle = dto.ProjectTitle;
+                //  TutorId update
+                if (dto.TutorId != 0)
+                    existingGroup.TutorId = dto.TutorId;
 
                 if (dto.StudentIds != null && dto.StudentIds.Count > 0)
                 {
@@ -109,5 +110,4 @@ namespace Application.Services.TutorService
             }
         }
     }
-
 }
