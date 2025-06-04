@@ -21,7 +21,7 @@ namespace Project_Management_System.Controllers.Hod
         [HttpGet("groups/{department}")]
         public async Task<IActionResult> GetGroupsByDepartment(string department)
         {
-            var result = await _departmentGroupsService.GetGroupsByDepartmentAsync(department);
+            var result = await _departmentGroupsService.GetGroupsByDepartment(department);
 
             if (result == null || result.Count == 0)
                 return NotFound($"No project groups found for department: {department}");

@@ -1,4 +1,5 @@
-﻿using Application.Dto;
+﻿using Application.ApiResponse;
+using Application.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,8 @@ namespace Application.Interface.TutorInterface
 {
     public interface IProjectGroupService
     {
-        Task<string> CreateProjectGroupAsync(ProjectGroupCreateDto dto);
-        Task<string> UpdateProjectGroupAsync(int groupId, ProjectGroupCreateDto dto);
-        Task<string> DeleteProjectGroupAsync(int groupId);
+        Task<ApiResponse<string>> CreateProjectGroup(ProjectGroupCreateDto dto, int TutorId);
+        Task<ApiResponse<string>> UpdateProjectGroup(int groupId, ProjectGroupCreateDto dto, int TutorId);
+        Task<ApiResponse<string>> DeleteProjectGroup(int groupId);
     }
 }

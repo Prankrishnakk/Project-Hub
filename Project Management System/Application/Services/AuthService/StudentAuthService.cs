@@ -28,7 +28,7 @@ namespace Application.Services.AuthServices
             _mapper = mapper;
         }
 
-        public async Task<string> RegisterAsync(StudentRegDto dto)
+        public async Task<string> Register(StudentRegDto dto)
         {
             // Trim inputs
             dto.Name = dto.Name?.Trim();
@@ -51,7 +51,7 @@ namespace Application.Services.AuthServices
             return "Registration successful.";
         }
 
-        public async Task<AuthResponseDto> LoginAsync(StudentLoginDto dto)
+        public async Task<AuthResponseDto> Login(StudentLoginDto dto)
         {
             var student = await _repository.GetByEmailAsync(dto.Email);
 

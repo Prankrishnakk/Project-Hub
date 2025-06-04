@@ -8,7 +8,7 @@ namespace Application.Dto
 {
     public class ProjectGroupCreateDto
     {
-        public int TutorId { get; set; }
+      
         public string GroupName { get; set; }
         public string ProjectTitle { get; set; }
         public List<int> StudentIds { get; set; }

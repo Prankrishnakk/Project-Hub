@@ -9,7 +9,7 @@ namespace Application.Interface.AuthInterface
 {
     public interface IStudentAuthService
     {
-        Task<string> RegisterAsync(StudentRegDto dto);
-        Task<AuthResponseDto> LoginAsync(StudentLoginDto dto);
+        Task<string> Register(StudentRegDto dto);
+        Task<AuthResponseDto> Login(StudentLoginDto dto);
     }
 }

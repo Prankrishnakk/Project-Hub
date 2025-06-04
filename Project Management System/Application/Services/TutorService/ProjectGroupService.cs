@@ -1,4 +1,5 @@
-﻿using Application.Dto;
+﻿using Application.ApiResponse;
+using Application.Dto;
 using Application.Interface.TutorInterface;
 using AutoMapper;
 using Domain.Model;
@@ -19,94 +20,92 @@ namespace Application.Services.TutorService
             _mapper = mapper;
         }
 
-        public async Task<string> CreateProjectGroupAsync(ProjectGroupCreateDto dto)
+        public async Task<ApiResponse<string>> CreateProjectGroup(ProjectGroupCreateDto dto, int TutorId)
         {
             try
             {
                 if (dto.StudentIds.Count < 2)
-                    return "Project group must contain at least 2 students.";
+                    return new ApiResponse<string>(null, "Project group must contain at least 2 students.", false);
 
                 var students = await _repository.GetUngroupedStudentsAsync(dto.StudentIds);
 
                 if (students.Count != dto.StudentIds.Count)
-                    return "Some students are already in a group or not found.";
+                    return new ApiResponse<string>(null, "Some students are already in a group or not found.", false);
 
                 var group = _mapper.Map<ProjectGroup>(dto);
                 group.Students = students;
-                group.TutorId = dto.TutorId;
+                group.TutorId = TutorId;
 
                 await _repository.AddProjectGroupAsync(group);
                 await _repository.SaveAsync();
 
-                return "Project group created successfully.";
+                return new ApiResponse<string>("Project group created successfully.");
             }
             catch (Exception ex)
             {
-                return $"Error creating project group: {ex.Message}";
+                return new ApiResponse<string>(null, $"Error creating project group: {ex.Message}", false);
             }
         }
 
-        public async Task<string> UpdateProjectGroupAsync(int groupId, ProjectGroupCreateDto dto)
+        public async Task<ApiResponse<string>> UpdateProjectGroup(int groupId, ProjectGroupCreateDto dto, int TutorId)
         {
             try
             {
                 var existingGroup = await _repository.GetProjectGroupByIdAsync(groupId);
                 if (existingGroup == null)
-                    return "Project group not found.";
+                    return new ApiResponse<string>(null, "Project group not found.", false);
 
                 if (!string.IsNullOrWhiteSpace(dto.GroupName))
                     existingGroup.GroupName = dto.GroupName;
 
                 if (!string.IsNullOrWhiteSpace(dto.ProjectTitle))
                     existingGroup.ProjectTitle = dto.ProjectTitle;
-                //  TutorId update
-                if (dto.TutorId != 0)
-                    existingGroup.TutorId = dto.TutorId;
+
+                if (TutorId != 0)
+                    existingGroup.TutorId = TutorId;
 
                 if (dto.StudentIds != null && dto.StudentIds.Count > 0)
                 {
                     if (dto.StudentIds.Count < 2)
-                        return "Project group must contain at least 2 students.";
+                        return new ApiResponse<string>(null, "Project group must contain at least 2 students.", false);
 
                     var students = await _repository.GetUngroupedOrBelongToGroupAsync(dto.StudentIds, groupId);
 
                     if (students.Count != dto.StudentIds.Count)
-                        return "Some students are already in another group or not found.";
+                        return new ApiResponse<string>(null, "Some students are already in another group or not found.", false);
 
                     existingGroup.Students.Clear();
                     foreach (var student in students)
-                    {
                         existingGroup.Students.Add(student);
-                    }
                 }
 
                 await _repository.UpdateProjectGroupAsync(existingGroup);
                 await _repository.SaveAsync();
 
-                return "Project group updated successfully.";
+                return new ApiResponse<string>("Project group updated successfully.");
             }
             catch (Exception ex)
             {
-                return $"Error updating project group: {ex.Message}";
+                return new ApiResponse<string>(null, $"Error updating project group: {ex.Message}", false);
             }
         }
 
-        public async Task<string> DeleteProjectGroupAsync(int groupId)
+        public async Task<ApiResponse<string>> DeleteProjectGroup(int groupId)
         {
             try
             {
                 var group = await _repository.GetProjectGroupByIdAsync(groupId);
                 if (group == null)
-                    return "Project group not found.";
+                    return new ApiResponse<string>(null, "Project group not found.", false);
 
                 await _repository.DeleteProjectGroupAsync(group);
                 await _repository.SaveAsync();
 
-                return "Project group and its students deleted successfully.";
+                return new ApiResponse<string>("Project group and its students deleted successfully.");
             }
             catch (Exception ex)
             {
-                return $"Error deleting project group: {ex.Message}";
+                return new ApiResponse<string>(null, $"Error deleting project group: {ex.Message}", false);
             }
         }
     }

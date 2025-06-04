@@ -4,6 +4,7 @@ using Application.Interface.TutorInterface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Project_Management_System.Controllers.Tutor
@@ -25,11 +26,9 @@ namespace Project_Management_System.Controllers.Tutor
         {
             try
             {
-                var result = await _service.CreateProjectGroupAsync(dto);
-                var success = result == "Project group created successfully.";
-                var response = new ApiResponse<string>(result, result, success);
-
-                return success ? Ok(response) : BadRequest(response);
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var response = await _service.CreateProjectGroup(dto, userId);
+                return response.Success ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -46,12 +45,9 @@ namespace Project_Management_System.Controllers.Tutor
                 if (dto == null)
                     return BadRequest(new ApiResponse<string>(null, "Invalid input data", false));
 
-                var result = await _service.UpdateProjectGroupAsync(groupId, dto);
-                bool success = result == "Project group updated successfully.";
-
-                return success
-                    ? Ok(new ApiResponse<string>(result, result, true))
-                    : BadRequest(new ApiResponse<string>(null, result, false));
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var response = await _service.UpdateProjectGroup(groupId, dto, userId);
+                return response.Success ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
@@ -65,12 +61,8 @@ namespace Project_Management_System.Controllers.Tutor
         {
             try
             {
-                var result = await _service.DeleteProjectGroupAsync(groupId);
-                bool success = result == "Project group and its students deleted successfully.";
-
-                return success
-                    ? Ok(new ApiResponse<string>(result, result, true))
-                    : NotFound(new ApiResponse<string>(null, result, false));
+                var response = await _service.DeleteProjectGroup(groupId);
+                return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {

@@ -22,7 +22,7 @@ namespace Project_Management_System.Controllers.Auth
         {
             try
             {
-                var result = await _authService.RegisterAsync(dto);
+                var result = await _authService.Register(dto);
                 return Ok(new ApiResponse<string>(result, "Student registered successfully", true));
             }
             catch (Exception ex)
@@ -36,7 +36,7 @@ namespace Project_Management_System.Controllers.Auth
         {
             try
             {
-                var result = await _authService.LoginAsync(dto);
+                var result = await _authService.Login(dto);
                 return Ok(new ApiResponse<AuthResponseDto>(result, "Login successful", true));
             }
             catch (Exception ex)

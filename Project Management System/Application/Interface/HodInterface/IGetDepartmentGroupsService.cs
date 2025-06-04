@@ -9,6 +9,6 @@ namespace Application.Interface.HodInterface
 {
     public interface IGetDepartmentGroupsService
     {
-        Task<List<DepartmentProjectGroupDto>> GetGroupsByDepartmentAsync(string department);
+        Task<List<DepartmentProjectGroupDto>> GetGroupsByDepartment(string department);
     }
 }

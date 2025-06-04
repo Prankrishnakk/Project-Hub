@@ -17,7 +17,7 @@ namespace Application.Services.HodService
             _repository = repository;
         }
 
-        public async Task<List<DepartmentProjectGroupDto>> GetGroupsByDepartmentAsync(string department)
+        public async Task<List<DepartmentProjectGroupDto>> GetGroupsByDepartment(string department)
         {
             var groups = await _repository.FetchGroupsByDepartmentAsync(department);
             Console.WriteLine(groups);
