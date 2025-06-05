@@ -17,10 +17,10 @@ namespace Application.Services.HodService
             _repository = repository;
         }
 
-        public async Task<List<DepartmentProjectGroupDto>> GetGroupsByDepartment(string department)
+        public async Task<ICollection<DepartmentProjectGroupDto>> GetGroupsByDepartment(string department)
         {
             var groups = await _repository.FetchGroupsByDepartmentAsync(department);
-            Console.WriteLine(groups);
+           
             return groups.Select(g => new DepartmentProjectGroupDto
             
             {
@@ -30,7 +30,7 @@ namespace Application.Services.HodService
                 TutorName = g.Tutor?.Name ?? "Unknown",
                 StudentNames = g.Students.Select(s => s.Name).ToList()
             }).ToList();
-            Console.WriteLine(groups);
+            
         }
 
     }

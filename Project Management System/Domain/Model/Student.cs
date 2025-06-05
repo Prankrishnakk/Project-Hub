@@ -20,6 +20,9 @@ namespace Domain.Model
 
         // ➕ Add this if the student is a tutor
         public virtual ICollection<ProjectGroup> TutoredGroups { get; set; }
+       
+        public virtual ICollection<StudentProject> StudentProjects { get; set; }
+
 
 
     }
