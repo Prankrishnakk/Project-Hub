@@ -10,6 +10,6 @@ namespace Application.Interface.StudentInterface
     public interface IStudentProjectRepository
     {
         Task<StudentProject> GetByStudentIdAsync(int studentId);
-        Task AddOrUpdateAsync(StudentProject project);
+        Task AddAsync(StudentProject project);
     }
 }

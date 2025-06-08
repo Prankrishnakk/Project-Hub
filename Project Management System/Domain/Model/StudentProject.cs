@@ -14,13 +14,12 @@ namespace Domain.Model
         public byte[] FileData { get; set; }
         public string ContentType { get; set; }
         public long FileSize { get; set; }     
-        public bool IsReviewed { get; set; } = false;
-        public string? Feedback { get; set; } 
         public DateTime UploadedAt { get; set; }
-        public DateTime? ReviewedAt { get; set; }
 
 
 
         public virtual Student Student { get; set; }
+
+        public virtual ICollection<TutorReview> TutorReviews { get; set; }
     }
 }

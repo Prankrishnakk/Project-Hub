@@ -38,6 +38,8 @@ namespace Project_Management_System
             builder.Services.AddScoped<IGetDepartmentGroupsService, GetDepartmentGroupsService>();
             builder.Services.AddScoped<IStudentProjectRepository,StudentProjectRepository>();
             builder.Services.AddScoped<IStudentProjectService, StudentProjectService>();
+            builder.Services.AddScoped<ITutorReviewRepository, TutorReviewRepository>();
+            builder.Services.AddScoped<ITutorReviewService, TutorReviewService>();
 
 
 

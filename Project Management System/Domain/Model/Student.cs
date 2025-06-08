@@ -23,6 +23,9 @@ namespace Domain.Model
        
         public virtual ICollection<StudentProject> StudentProjects { get; set; }
 
+        public virtual ICollection<TutorReview> TutorReviews { get; set; }
+
+
 
 
     }

@@ -2,15 +2,12 @@
 using Domain.Model;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories.TutorRepository
 {
-
     public class ProjectGroupRepository : IProjectGroupRepository
     {
         private readonly AppDbContext _context;
@@ -20,18 +17,26 @@ namespace Infrastructure.Repositories.TutorRepository
             _context = context;
         }
 
+        public async Task<Student> GetStudentByIdAsync(int id)
+        {
+            return await _context.Students.FirstOrDefaultAsync(s => s.Id == id);
+        }
+
         public async Task<List<Student>> GetUngroupedStudentsAsync(List<int> studentIds)
         {
             return await _context.Students
-                .Where(s => studentIds.Contains(s.Id) && s.GroupId == null)
+                .Where(s => studentIds.Contains(s.Id)
+                            && s.GroupId == null
+                            && s.Role == "Student") // ✅ Only valid students
                 .ToListAsync();
         }
 
         public async Task<List<Student>> GetUngroupedOrBelongToGroupAsync(List<int> studentIds, int groupId)
         {
             return await _context.Students
-                .Where(s => studentIds.Contains(s.Id) &&
-                            (s.GroupId == null || s.GroupId == groupId))
+                .Where(s => studentIds.Contains(s.Id)
+                            && (s.GroupId == null || s.GroupId == groupId)
+                            && s.Role == "Student") // ✅ Only valid students
                 .ToListAsync();
         }
 
@@ -62,5 +67,4 @@ namespace Infrastructure.Repositories.TutorRepository
             await _context.SaveChangesAsync();
         }
     }
-
 }

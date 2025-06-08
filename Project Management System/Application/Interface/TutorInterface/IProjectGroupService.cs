@@ -10,8 +10,8 @@ namespace Application.Interface.TutorInterface
 {
     public interface IProjectGroupService
     {
-        Task<ApiResponse<string>> CreateProjectGroup(ProjectGroupCreateDto dto, int TutorId);
-        Task<ApiResponse<string>> UpdateProjectGroup(int groupId, ProjectGroupCreateDto dto, int TutorId);
+        Task<ApiResponse<string>> CreateProjectGroup(ProjectGroupCreateDto dto, int tutorId);
+        Task<ApiResponse<string>> UpdateProjectGroup(int groupId, ProjectGroupCreateDto dto, int tutorId);
         Task<ApiResponse<string>> DeleteProjectGroup(int groupId);
     }
 }

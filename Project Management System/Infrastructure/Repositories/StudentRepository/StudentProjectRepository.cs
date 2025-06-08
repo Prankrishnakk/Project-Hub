@@ -25,27 +25,9 @@ namespace Infrastructure.Repositories.StudentRepository
                 .FirstOrDefaultAsync(p => p.StudentId == studentId);
         }
 
-        public async Task AddOrUpdateAsync(StudentProject project)
+        public async Task AddAsync(StudentProject project)
         {
-            var existing = await _context.StudentProjects
-                .FirstOrDefaultAsync(p => p.StudentId == project.StudentId);
-
-            if (existing == null)
-            {
-                await _context.StudentProjects.AddAsync(project);
-            }
-            else
-            {
-                existing.FileName = project.FileName;
-                existing.FileData = project.FileData;
-                existing.ContentType = project.ContentType;
-                existing.FileSize = project.FileSize;
-                existing.UploadedAt = project.UploadedAt;
-                existing.IsReviewed = false;
-                existing.Feedback = null;
-                existing.ReviewedAt = null;
-            }
-
+            await _context.StudentProjects.AddAsync(project);
             await _context.SaveChangesAsync();
         }
     }

@@ -38,7 +38,7 @@ namespace Application.Services.StudentServices
                 UploadedAt = DateTime.UtcNow
             };
 
-            await _repository.AddOrUpdateAsync(project);
+            await _repository.AddAsync(project);
             return new ApiResponse<string>(dto.ProjectFile.FileName, "Project uploaded successfully", true );
         }
     }
