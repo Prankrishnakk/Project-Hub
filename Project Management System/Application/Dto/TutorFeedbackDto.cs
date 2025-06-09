@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace Application.Dto
 {
-    public class TutorReviewDto
+    public class TutorFeedbackDto
     {
-        public int StudentProjectId { get; set; }
         public string? Feedback { get; set; }
+        public DateTime ReviewedAt { get; set; }
+        public string TutorName { get; set; }
     }
 }

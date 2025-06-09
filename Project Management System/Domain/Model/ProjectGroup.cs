@@ -11,10 +11,7 @@ namespace Domain.Model
         public int Id { get; set; }
         public string GroupName { get; set; }
         public string ProjectTitle { get; set; }
-
         public int? TutorId { get; set; }
-
-
         public virtual Student? Tutor { get; set; }
         public virtual ICollection<Student> Students { get; set; }
     }

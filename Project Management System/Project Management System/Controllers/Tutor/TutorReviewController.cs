@@ -4,6 +4,7 @@ using Application.Interface.TutorInterface;
 using Domain.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Project_Management_System.Controllers.Tutor
 {
@@ -18,21 +19,17 @@ namespace Project_Management_System.Controllers.Tutor
             _tutorReviewService = tutorReviewService;
         }
 
-        // POST: api/TutorReview
         [HttpPost("review")]
         public async Task<IActionResult> ReviewProject([FromBody] TutorReviewDto dto)
         {
-            if (!ModelState.IsValid)
+            if (dto == null)
                 return BadRequest(new ApiResponse<string>(null, "Invalid data", false));
 
-            var response = await _tutorReviewService.ReviewProjectAsync(dto);
+            int tutorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var response = await _tutorReviewService.ReviewProject(dto, tutorId);
 
-            if (response.Success)
-                return Ok(response);
-
-            return BadRequest(response);
+            return response.Success ? Ok(response) : BadRequest(response);
         }
-
 
 
     }

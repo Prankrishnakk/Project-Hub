@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Interface.StudentInterface
+namespace Application.Interface.TutorInterface
 {
-    public interface IGetProjectDetailsService
+    public interface ITutorGroupService
     {
-        Task<ApiResponse<MyGroupProjectSimpleDto>> GetMyGroupAndProjects(int studentId);
+        Task<ApiResponse<ICollection<TutorGroupDto>>> GetMyGroups(int tutorId);
     }
+
 }

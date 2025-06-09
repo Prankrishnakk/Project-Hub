@@ -2,6 +2,8 @@
 using Application.Dto;
 using Application.Interface.TutorInterface;
 using Domain.Model;
+using System;
+using System.Threading.Tasks;
 
 public class TutorReviewService : ITutorReviewService
 {
@@ -12,44 +14,36 @@ public class TutorReviewService : ITutorReviewService
         _repository = repository;
     }
 
-    public async Task<ApiResponse<TutorReviewDto>> ReviewProjectAsync(TutorReviewDto dto)
+    public async Task<ApiResponse<TutorReviewDto>> ReviewProject(TutorReviewDto dto, int tutorId)
     {
-       
         var studentProjectExists = await _repository.StudentProjectExists(dto.StudentProjectId);
         if (!studentProjectExists)
         {
             return new ApiResponse<TutorReviewDto>(
                 data: null,
-                message: $"StudentProject with Id {dto.StudentProjectId} does not exist.",
+                message: $"Student project with ID {dto.StudentProjectId} does not exist.",
                 success: false
             );
         }
+        var now = DateTime.Now;
 
         var review = new TutorReview
         {
             StudentProjectId = dto.StudentProjectId,
-            TutorId = dto.TutorId,
+            TutorId = tutorId,
             Feedback = dto.Feedback,
-            ReviewedAt = DateTime.Now,
-            WeekStartDate = GetCurrentWeekStartDate()
+            ReviewedAt = now,
+         
         };
 
         await _repository.Add(review);
 
         return new ApiResponse<TutorReviewDto>(
-            data: dto,
-            message: "Project reviewed successfully",
+            data: null,
+            message: "Project reviewed successfully.",
             success: true
-        ); ; ;
+        );
     }
 
-    private DateTime GetCurrentWeekStartDate()
-    {
-        var today = DateTime.Today;
-        int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
-        return today.AddDays(-diff);
-    }
-
-
-
+   
 }

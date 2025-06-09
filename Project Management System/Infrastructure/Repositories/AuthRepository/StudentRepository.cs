@@ -35,5 +35,7 @@ namespace Infrastructure.Repositories.AuthRepository
         {
             return await _context.Students.FirstOrDefaultAsync(s => s.Email == email);
         }
+
+
     }
 }

@@ -10,8 +10,9 @@ namespace Application.Dto
 {
     public class StudentRegDto
     {
-        [Required(ErrorMessage = "Name is required.")]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "Name must be between 2 and 50 characters.")]
+        [Required(ErrorMessage = "Username is required")]
+        [StringLength(20, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 20 characters")]
+        [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "Username can only contain letters, numbers, and underscores")]
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Email is required.")]
@@ -20,7 +21,9 @@ namespace Application.Dto
 
         [Required(ErrorMessage = "Department is required.")]
         [StringLength(50, ErrorMessage = "Department must not exceed 50 characters.")]
+        [RegularExpression(@"^(CSE|ECE|EEE|ME|CE|IT)$", ErrorMessage = "Department must be one of the following: CSE, ECE, EEE, ME, CE, IT.")]
         public string Department { get; set; }
+
 
         [Required(ErrorMessage = "Password is required.")]
         [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be at least 8 characters.")]

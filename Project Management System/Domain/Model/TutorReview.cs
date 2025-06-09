@@ -10,7 +10,6 @@ namespace Domain.Model
         public int StudentProjectId { get; set; }
         public int TutorId { get; set; }
 
-        public DateTime WeekStartDate { get; set; }
         public string? Feedback { get; set; }
 
         public DateTime ReviewedAt { get; set; } = DateTime.Now;

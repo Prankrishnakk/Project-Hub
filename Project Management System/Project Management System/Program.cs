@@ -42,6 +42,11 @@ namespace Project_Management_System
             builder.Services.AddScoped<ITutorReviewService, TutorReviewService>();
             builder.Services.AddScoped<IGetProjectDetailsRepository, GetProjectDetalisRepository>();
             builder.Services.AddScoped<IGetProjectDetailsService, GetProjectDetailsService>();
+            builder.Services.AddScoped<IStudentFeedbackRepository, StudentFeedbackRepository>();
+            builder.Services.AddScoped<IStudentFeedbackService, StudentFeedbackService>();
+            builder.Services.AddScoped<ITutorGroupRepository, TutorGroupRepository>();
+            builder.Services.AddScoped<ITutorGroupService, TutorGroupService>();
+
 
 
 

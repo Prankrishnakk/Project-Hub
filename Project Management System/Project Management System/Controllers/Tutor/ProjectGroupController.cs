@@ -38,7 +38,7 @@ namespace Project_Management_System.Controllers.Tutor
 
         [HttpPatch("update-Tutor/{groupId}")]
         [Authorize(Roles = "Tutor")]
-        public async Task<IActionResult> UpdateProjectGroup(int groupId, [FromBody] ProjectGroupCreateDto dto)
+        public async Task<IActionResult> UpdateProjectGroup(int groupId,[FromBody] ProjectGroupCreateDto dto)
         {
             try
             {

@@ -33,10 +33,6 @@ namespace Application.Services.AuthServices
             // Trim inputs
             dto.Name = dto.Name?.Trim();
             dto.Email = dto.Email?.Trim();
-            dto.Department = dto.Department?.Trim();
-            dto.Password = dto.Password?.Trim();
-            dto.ConfirmPassword = dto.ConfirmPassword?.Trim();
-
 
             if (dto.Password != dto.ConfirmPassword)
                 throw new ArgumentException("Passwords do not match.");

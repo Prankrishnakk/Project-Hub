@@ -16,12 +16,16 @@ namespace Infrastructure.Context
         {
             base.OnModelCreating(modelBuilder);
 
-            // Set default value for Student.IsBlocked
+           
             modelBuilder.Entity<Student>()
                 .Property(s => s.IsBlocked)
                 .HasDefaultValue(false);
 
-            // ProjectGroup → Tutor (Many-to-One)
+
+            modelBuilder.Entity<Student>()
+                .HasIndex(s => s.Name)
+                .IsUnique();
+
             modelBuilder.Entity<ProjectGroup>()
                 .HasOne(pg => pg.Tutor)
                 .WithMany(s => s.TutoredGroups)
@@ -29,7 +33,7 @@ namespace Infrastructure.Context
                 .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(false);
 
-            // ProjectGroup → Students (One-to-Many)
+           
             modelBuilder.Entity<Student>()
                 .HasOne(s => s.Group)
                 .WithMany(pg => pg.Students)

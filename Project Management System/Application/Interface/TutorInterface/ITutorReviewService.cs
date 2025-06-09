@@ -11,7 +11,7 @@ namespace Application.Interface.TutorInterface
 {
     public interface ITutorReviewService
     {
-        Task<ApiResponse<TutorReviewDto>> ReviewProjectAsync(TutorReviewDto dto);
+        Task<ApiResponse<TutorReviewDto>> ReviewProject(TutorReviewDto dto, int TutorId);
 
     }
 }
