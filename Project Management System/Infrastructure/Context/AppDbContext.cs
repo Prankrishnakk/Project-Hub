@@ -22,10 +22,7 @@ namespace Infrastructure.Context
                 .HasDefaultValue(false);
 
 
-            modelBuilder.Entity<Student>()
-                .HasIndex(s => s.Name)
-                .IsUnique();
-
+            // Tutor to ProjectGroup (one-to-many, optional)
             modelBuilder.Entity<ProjectGroup>()
                 .HasOne(pg => pg.Tutor)
                 .WithMany(s => s.TutoredGroups)
@@ -33,7 +30,7 @@ namespace Infrastructure.Context
                 .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(false);
 
-           
+            // Student to ProjectGroup (many-to-one, optional)
             modelBuilder.Entity<Student>()
                 .HasOne(s => s.Group)
                 .WithMany(pg => pg.Students)
@@ -48,11 +45,12 @@ namespace Infrastructure.Context
                 .HasForeignKey(sp => sp.StudentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // StudentProject → TutorReviews (One-to-Many)
-            modelBuilder.Entity<StudentProject>()
-                .HasMany(sp => sp.TutorReviews)
-                .WithOne(tr => tr.StudentProject)
-                .HasForeignKey(tr => tr.StudentProjectId)
+       
+            // ✅ ADD: ProjectGroup → TutorReview (One-to-Many)
+            modelBuilder.Entity<TutorReview>()
+                .HasOne<ProjectGroup>()
+                .WithMany()
+                .HasForeignKey(tr => tr.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // TutorReview → Tutor (Student)
@@ -60,7 +58,9 @@ namespace Infrastructure.Context
                 .HasOne(tr => tr.Tutor)
                 .WithMany()
                 .HasForeignKey(tr => tr.TutorId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade cycles
+                .OnDelete(DeleteBehavior.Restrict);
+
+           
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Infrastructure.Repositories.TutorRepository
                 .Where(p => p.Student.GroupId == groupId)
                 .Select(p => new ProjectByGroupDto
                 {
-                    ProjectId = p.Id,
+                    SubmisssionId = p.Id,
                     FileName = p.FileName,
                     StudentName = p.Student.Name,
                     SubmittedAt = p.UploadedAt

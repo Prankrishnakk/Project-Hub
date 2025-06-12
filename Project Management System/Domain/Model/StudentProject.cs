@@ -17,9 +17,6 @@ namespace Domain.Model
         public DateTime UploadedAt { get; set; }
 
 
-
         public virtual Student Student { get; set; }
-
-        public virtual ICollection<TutorReview> TutorReviews { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class first : Migration
+    public partial class @new : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,7 +32,7 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Department = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -81,9 +81,8 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StudentProjectId = table.Column<int>(type: "int", nullable: false),
+                    GroupId = table.Column<int>(type: "int", nullable: false),
                     TutorId = table.Column<int>(type: "int", nullable: false),
-                    WeekStartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Feedback = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ReviewedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -91,9 +90,9 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_TutorReviews", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TutorReviews_StudentProjects_StudentProjectId",
-                        column: x => x.StudentProjectId,
-                        principalTable: "StudentProjects",
+                        name: "FK_TutorReviews_ProjectGroups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "ProjectGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -120,15 +119,9 @@ namespace Infrastructure.Migrations
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Students_Name",
-                table: "Students",
-                column: "Name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TutorReviews_StudentProjectId",
+                name: "IX_TutorReviews_GroupId",
                 table: "TutorReviews",
-                column: "StudentProjectId");
+                column: "GroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TutorReviews_TutorId",
@@ -152,10 +145,10 @@ namespace Infrastructure.Migrations
                 table: "ProjectGroups");
 
             migrationBuilder.DropTable(
-                name: "TutorReviews");
+                name: "StudentProjects");
 
             migrationBuilder.DropTable(
-                name: "StudentProjects");
+                name: "TutorReviews");
 
             migrationBuilder.DropTable(
                 name: "Students");

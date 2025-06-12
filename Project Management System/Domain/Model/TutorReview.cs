@@ -7,7 +7,7 @@ namespace Domain.Model
     {
         public int Id { get; set; }
 
-        public int StudentProjectId { get; set; }
+        public int GroupId{ get; set; }
         public int TutorId { get; set; }
 
         public string? Feedback { get; set; }
@@ -15,7 +15,6 @@ namespace Domain.Model
         public DateTime ReviewedAt { get; set; } = DateTime.Now;
 
   
-        public virtual StudentProject StudentProject { get; set; }
         public virtual Student Tutor { get; set; } 
     }
 }

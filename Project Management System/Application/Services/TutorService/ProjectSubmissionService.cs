@@ -24,7 +24,7 @@ namespace Application.Services.TutorService
 
             if (projects.Count == 0)
             {
-                return new ApiResponse<ICollection<ProjectByGroupDto>>(null, "No projects found or unauthorized access.", false);
+                return new ApiResponse<ICollection<ProjectByGroupDto>>(null, "No projects found.", false);
             }
 
             return new ApiResponse<ICollection<ProjectByGroupDto>>(projects, "Projects fetched successfully.", true);

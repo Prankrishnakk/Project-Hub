@@ -19,17 +19,28 @@ namespace Infrastructure.Repositories.StudentRepository
             _context = context;
         }
 
+
         public async Task<ICollection<TutorFeedbackDto>> GetFeedbacksByStudentId(int studentId)
         {
-            return await _context.TutorReviews
-                .Where(r => r.StudentProject.StudentId == studentId)
-                .Select(r => new TutorFeedbackDto
+            var groupId = await _context.Students
+                .Where(s => s.Id == studentId)
+                .Select(s => s.GroupId)
+                .FirstOrDefaultAsync();
+
+            var feedbacks = await _context.TutorReviews
+                .Where(tr => tr.GroupId == groupId)
+                .OrderByDescending(tr => tr.ReviewedAt)
+                .Select(tr => new TutorFeedbackDto
                 {
-                    Feedback = r.Feedback,
-                    ReviewedAt = r.ReviewedAt,
-                    TutorName = r.Tutor.Name
+                    Feedback = tr.Feedback,
+                    ReviewedAt = tr.ReviewedAt,
+                    TutorName = tr.Tutor.Name
                 })
+                .Distinct()
                 .ToListAsync();
+
+            return feedbacks;
         }
+
     }
 }

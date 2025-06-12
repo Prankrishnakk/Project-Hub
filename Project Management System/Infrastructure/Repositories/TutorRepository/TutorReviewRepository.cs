@@ -2,10 +2,8 @@
 using Domain.Model;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories.TutorRepository
@@ -19,31 +17,37 @@ namespace Infrastructure.Repositories.TutorRepository
             _context = context;
         }
 
-        public async Task Add(TutorReview review)
+        public async Task<List<StudentProject>> GetStudentProjectsByGroupId(int groupId)
         {
-            await _context.TutorReviews.AddAsync(review);
-            await _context.SaveChangesAsync();
+            return await _context.StudentProjects
+                .Where(sp => sp.Student.GroupId == groupId)
+                .ToListAsync();
+        }
+
+        public async Task<bool> GroupExists(int groupId)
+        {
+            return await _context.Students.AnyAsync(s => s.GroupId == groupId);
         }
 
         public async Task<List<TutorReview>> GetReviewsByTutorId(int tutorId)
         {
             return await _context.TutorReviews
-                .Include(r => r.StudentProject)
+                .Include(r => r.Tutor)
                 .Where(r => r.TutorId == tutorId)
                 .ToListAsync();
         }
 
-        public async Task<TutorReview?> GetReviewByProjectId(int projectId)
+        public async Task<List<Student>> GetStudentsByGroupId(int groupId)
         {
-            return await _context.TutorReviews
-                .Include(r => r.Tutor)
-                .FirstOrDefaultAsync(r => r.StudentProjectId == projectId);
+            return await _context.Students
+                .Where(s => s.GroupId == groupId)
+                .ToListAsync();
         }
-        public async Task<bool> StudentProjectExists(int studentProjectId)
+        public async Task Add(TutorReview review)
         {
-            return await _context.StudentProjects.AnyAsync(sp => sp.Id == studentProjectId);
+            await _context.TutorReviews.AddAsync(review);
+            await _context.SaveChangesAsync();
         }
-     
 
     }
 }

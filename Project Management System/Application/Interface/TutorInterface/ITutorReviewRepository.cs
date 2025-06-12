@@ -9,10 +9,10 @@ namespace Application.Interface.TutorInterface
 {
     public interface ITutorReviewRepository
     {
-        Task Add(TutorReview review);
+        Task<List<StudentProject>> GetStudentProjectsByGroupId(int groupId);
+        Task<bool> GroupExists(int groupId);
         Task<List<TutorReview>> GetReviewsByTutorId(int tutorId);
-        Task<TutorReview?> GetReviewByProjectId(int projectId);
-        Task<bool> StudentProjectExists(int studentProjectId);
-   
+        Task<List<Student>> GetStudentsByGroupId(int groupId);
+        Task Add(TutorReview review);
     }
 }

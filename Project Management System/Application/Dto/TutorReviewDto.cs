@@ -8,7 +8,7 @@ namespace Application.Dto
 {
     public class TutorReviewDto
     {
-        public int StudentProjectId { get; set; }
+        public int GroupId { get; set; }
         public string? Feedback { get; set; }
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250609084346_first")]
-    partial class first
+    [Migration("20250612061311_new")]
+    partial class @new
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -77,7 +77,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -90,9 +90,6 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GroupId");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Students");
                 });
@@ -144,21 +141,18 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Feedback")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("ReviewedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("StudentProjectId")
-                        .HasColumnType("int");
 
                     b.Property<int>("TutorId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("WeekStartDate")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentProjectId");
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("TutorId");
 
@@ -198,9 +192,9 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Model.TutorReview", b =>
                 {
-                    b.HasOne("Domain.Model.StudentProject", "StudentProject")
-                        .WithMany("TutorReviews")
-                        .HasForeignKey("StudentProjectId")
+                    b.HasOne("Domain.Model.ProjectGroup", null)
+                        .WithMany()
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -209,8 +203,6 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("TutorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("StudentProject");
 
                     b.Navigation("Tutor");
                 });
@@ -225,11 +217,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("StudentProjects");
 
                     b.Navigation("TutoredGroups");
-                });
-
-            modelBuilder.Entity("Domain.Model.StudentProject", b =>
-                {
-                    b.Navigation("TutorReviews");
                 });
 #pragma warning restore 612, 618
         }

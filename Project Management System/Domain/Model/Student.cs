@@ -23,7 +23,7 @@ namespace Domain.Model
        
         public virtual ICollection<StudentProject> StudentProjects { get; set; }
 
-      
+
 
 
 

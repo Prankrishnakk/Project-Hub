@@ -26,7 +26,7 @@ namespace Project_Management_System.Controllers.Tutor
                 return BadRequest(new ApiResponse<string>(null, "Invalid data", false));
 
             int tutorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var response = await _tutorReviewService.ReviewProject(dto, tutorId);
+            var response = await _tutorReviewService.ReviewGroupProject(dto, tutorId);
 
             return response.Success ? Ok(response) : BadRequest(response);
         }
