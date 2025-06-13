@@ -1,4 +1,5 @@
-﻿using Domain.Model;
+﻿using Domain.Enum;
+using Domain.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Context
@@ -22,7 +23,16 @@ namespace Infrastructure.Context
                 .HasDefaultValue(false);
 
 
-            // Tutor to ProjectGroup (one-to-many, optional)
+
+            modelBuilder.Entity<ProjectGroup>(entity =>
+            {
+               
+                entity.Property(e => e.Status)
+                      .HasConversion<int>() 
+                      .HasDefaultValue(ProjectStatus.Assigned);
+            });
+
+ 
             modelBuilder.Entity<ProjectGroup>()
                 .HasOne(pg => pg.Tutor)
                 .WithMany(s => s.TutoredGroups)
@@ -30,7 +40,7 @@ namespace Infrastructure.Context
                 .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(false);
 
-            // Student to ProjectGroup (many-to-one, optional)
+      
             modelBuilder.Entity<Student>()
                 .HasOne(s => s.Group)
                 .WithMany(pg => pg.Students)
@@ -38,7 +48,7 @@ namespace Infrastructure.Context
                 .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false);
 
-            // Student → StudentProjects (One-to-Many)
+       
             modelBuilder.Entity<Student>()
                 .HasMany(s => s.StudentProjects)
                 .WithOne(sp => sp.Student)
@@ -46,14 +56,14 @@ namespace Infrastructure.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
        
-            // ✅ ADD: ProjectGroup → TutorReview (One-to-Many)
+      
             modelBuilder.Entity<TutorReview>()
                 .HasOne<ProjectGroup>()
                 .WithMany()
                 .HasForeignKey(tr => tr.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // TutorReview → Tutor (Student)
+     
             modelBuilder.Entity<TutorReview>()
                 .HasOne(tr => tr.Tutor)
                 .WithMany()

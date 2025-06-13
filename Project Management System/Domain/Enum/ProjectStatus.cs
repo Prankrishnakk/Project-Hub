@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Enum
 {
-    public enum UserRole
+    public enum ProjectStatus
     {
-        Student,
-        Tutor ,
-        HOD 
+        Assigned =1,
+        Ongoing =2,
+        Completed =3
     }
 }

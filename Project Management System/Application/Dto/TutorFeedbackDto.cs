@@ -11,5 +11,6 @@ namespace Application.Dto
         public string? Feedback { get; set; }
         public DateTime ReviewedAt { get; set; }
         public string TutorName { get; set; }
+
     }
 }

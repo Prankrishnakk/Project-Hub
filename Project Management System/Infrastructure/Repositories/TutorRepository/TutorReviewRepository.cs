@@ -48,6 +48,20 @@ namespace Infrastructure.Repositories.TutorRepository
             await _context.TutorReviews.AddAsync(review);
             await _context.SaveChangesAsync();
         }
+        public async Task Save()
+        {
+            await _context.SaveChangesAsync();
+        }
+        public async Task<ProjectGroup> GetProjectGroupById(int groupId)
+        {
+            return await _context.ProjectGroups.FindAsync(groupId);
+        }
+        public async Task<int> GetMaxReviewIdAsync()
+        {
+            return await _context.TutorReviews
+                .Select(r => (int?)r.ReviewId)
+                .MaxAsync() ?? 1; 
+        }
 
     }
 }

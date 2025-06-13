@@ -30,5 +30,16 @@ namespace Infrastructure.Repositories.StudentRepository
             await _context.StudentProjects.AddAsync(project);
             await _context.SaveChangesAsync();
         }
+        public async Task<Student?> GetStudentByIdAsync(int studentId)
+        {
+            return await _context.Students.FindAsync(studentId);
+        }
+
+        public async Task<StudentProject?> GetFinalSubmissionAsync(int studentId)
+        {
+            return await _context.StudentProjects
+                .FirstOrDefaultAsync(p => p.StudentId == studentId && p.FinalSubmission);
+        }
+
     }
 }

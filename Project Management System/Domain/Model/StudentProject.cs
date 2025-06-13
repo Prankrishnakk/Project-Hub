@@ -15,8 +15,7 @@ namespace Domain.Model
         public string ContentType { get; set; }
         public long FileSize { get; set; }     
         public DateTime UploadedAt { get; set; }
-
-
+        public bool FinalSubmission {get; set; }
         public virtual Student Student { get; set; }
     }
 }

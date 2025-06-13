@@ -38,6 +38,11 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<int?>("TutorId")
                         .HasColumnType("int");
 
@@ -114,6 +119,9 @@ namespace Infrastructure.Migrations
                     b.Property<long>("FileSize")
                         .HasColumnType("bigint");
 
+                    b.Property<bool>("FinalSubmission")
+                        .HasColumnType("bit");
+
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
@@ -139,6 +147,12 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<float>("Mark")
+                        .HasColumnType("real");
+
+                    b.Property<int>("ReviewId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ReviewedAt")

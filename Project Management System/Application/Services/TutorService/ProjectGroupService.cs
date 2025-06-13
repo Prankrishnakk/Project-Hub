@@ -2,6 +2,7 @@
 using Application.Dto;
 using Application.Interface.TutorInterface;
 using AutoMapper;
+using Domain.Enum;
 using Domain.Model;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,7 @@ namespace Application.Services.TutorService
                 var group = _mapper.Map<ProjectGroup>(dto);
                 group.Students = students;
                 group.TutorId = tutorId;
+                group.Status = ProjectStatus.Assigned;
 
                 await _repository.AddProjectGroupAsync(group);
                 await _repository.SaveAsync();

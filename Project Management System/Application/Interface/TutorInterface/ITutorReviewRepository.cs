@@ -10,9 +10,12 @@ namespace Application.Interface.TutorInterface
     public interface ITutorReviewRepository
     {
         Task<List<StudentProject>> GetStudentProjectsByGroupId(int groupId);
+        Task<ProjectGroup> GetProjectGroupById(int groupId);
+        Task<int> GetMaxReviewIdAsync();
         Task<bool> GroupExists(int groupId);
         Task<List<TutorReview>> GetReviewsByTutorId(int tutorId);
         Task<List<Student>> GetStudentsByGroupId(int groupId);
         Task Add(TutorReview review);
+        Task Save();
     }
 }

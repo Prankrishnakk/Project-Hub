@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ namespace Domain.Model
         public string GroupName { get; set; }
         public string ProjectTitle { get; set; }
         public int? TutorId { get; set; }
+        public ProjectStatus? Status { get; set; }
         public virtual Student? Tutor { get; set; }
         public virtual ICollection<Student> Students { get; set; }
     }
