@@ -32,6 +32,8 @@ namespace Infrastructure.Repositories.StudentRepository
                 .OrderByDescending(tr => tr.ReviewedAt)
                 .Select(tr => new TutorFeedbackDto
                 {
+                    ReviewId = tr.ReviewId,
+                    Mark = tr.Mark,
                     Feedback = tr.Feedback,
                     ReviewedAt = tr.ReviewedAt,
                     TutorName = tr.Tutor.Name

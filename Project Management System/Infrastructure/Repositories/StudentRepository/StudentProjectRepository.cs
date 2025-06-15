@@ -35,11 +35,5 @@ namespace Infrastructure.Repositories.StudentRepository
             return await _context.Students.FindAsync(studentId);
         }
 
-        public async Task<StudentProject?> GetFinalSubmissionAsync(int studentId)
-        {
-            return await _context.StudentProjects
-                .FirstOrDefaultAsync(p => p.StudentId == studentId && p.FinalSubmission);
-        }
-
     }
 }

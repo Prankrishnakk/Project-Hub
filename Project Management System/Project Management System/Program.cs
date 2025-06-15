@@ -1,14 +1,17 @@
 
+using Application.Interface.AdminInterface;
 using Application.Interface.AuthInterface;
 using Application.Interface.HodInterface;
 using Application.Interface.StudentInterface;
 using Application.Interface.TutorInterface;
 using Application.Mapper;
+using Application.Services.AdminService;
 using Application.Services.AuthServices;
 using Application.Services.HodService;
 using Application.Services.StudentServices;
 using Application.Services.TutorService;
 using Infrastructure.Context;
+using Infrastructure.Repositories.AdminRepository;
 using Infrastructure.Repositories.AuthRepository;
 using Infrastructure.Repositories.HodRepository;
 using Infrastructure.Repositories.StudentRepository;
@@ -48,6 +51,8 @@ namespace Project_Management_System
             builder.Services.AddScoped<ITutorGroupService, TutorGroupService>();
             builder.Services.AddScoped<IProjectSubmissionRepository, ProjectSubmissionRepository>();
             builder.Services.AddScoped<IProjectSubmissionService, ProjectSubmissionService>();
+            builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
+            builder.Services.AddScoped<IAdminUserService, AdminUserService>();
 
 
 

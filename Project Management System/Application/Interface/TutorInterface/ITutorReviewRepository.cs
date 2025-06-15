@@ -11,11 +11,12 @@ namespace Application.Interface.TutorInterface
     {
         Task<List<StudentProject>> GetStudentProjectsByGroupId(int groupId);
         Task<ProjectGroup> GetProjectGroupById(int groupId);
-        Task<int> GetMaxReviewIdAsync();
         Task<bool> GroupExists(int groupId);
+        Task<List<StudentProject>> GetFinalProjectsByGroupId(int groupId);
         Task<List<TutorReview>> GetReviewsByTutorId(int tutorId);
         Task<List<Student>> GetStudentsByGroupId(int groupId);
         Task Add(TutorReview review);
         Task Save();
+        void UpdateProjectGroup(ProjectGroup projectGroup);
     }
 }

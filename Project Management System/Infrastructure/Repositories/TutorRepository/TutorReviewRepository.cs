@@ -43,25 +43,32 @@ namespace Infrastructure.Repositories.TutorRepository
                 .Where(s => s.GroupId == groupId)
                 .ToListAsync();
         }
+
+  
         public async Task Add(TutorReview review)
         {
             await _context.TutorReviews.AddAsync(review);
-            await _context.SaveChangesAsync();
         }
         public async Task Save()
         {
             await _context.SaveChangesAsync();
         }
+
         public async Task<ProjectGroup> GetProjectGroupById(int groupId)
         {
             return await _context.ProjectGroups.FindAsync(groupId);
         }
-        public async Task<int> GetMaxReviewIdAsync()
-        {
-            return await _context.TutorReviews
-                .Select(r => (int?)r.ReviewId)
-                .MaxAsync() ?? 1; 
-        }
 
+        public async Task<List<StudentProject>> GetFinalProjectsByGroupId(int groupId)
+        {
+            return await _context.StudentProjects
+                .Where(p => p.Student.GroupId == groupId && p.FinalSubmission)
+                .Include(p => p.Student)
+                .ToListAsync();
+        }
+        public void UpdateProjectGroup(ProjectGroup group)
+        {
+            _context.ProjectGroups.Update(group);
+        }
     }
 }

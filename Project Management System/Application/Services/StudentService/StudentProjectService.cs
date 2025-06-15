@@ -53,11 +53,6 @@ namespace Application.Services.StudentServices
             if (student.GroupId == null)
                 return new ApiResponse<string>(null, "Student is not assigned to a project group.", false);
 
-            // Prevent multiple final submissions
-            var existingFinal = await _repository.GetFinalSubmissionAsync(studentId);
-            if (existingFinal != null)
-                return new ApiResponse<string>(null, "Final project already submitted.", false);
-
             using var ms = new MemoryStream();
             await dto.ProjectFile.CopyToAsync(ms);
             var fileBytes = ms.ToArray();

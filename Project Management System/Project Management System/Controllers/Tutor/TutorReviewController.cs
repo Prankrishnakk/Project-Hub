@@ -2,6 +2,7 @@
 using Application.Dto;
 using Application.Interface.TutorInterface;
 using Domain.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -19,7 +20,7 @@ namespace Project_Management_System.Controllers.Tutor
             _tutorReviewService = tutorReviewService;
         }
 
-        [HttpPost("review")]
+        [HttpPost("Review")]
         public async Task<IActionResult> ReviewProject([FromBody] TutorReviewDto dto)
         {
             if (dto == null)
@@ -30,6 +31,24 @@ namespace Project_Management_System.Controllers.Tutor
 
             return response.Success ? Ok(response) : BadRequest(response);
         }
+        [HttpPost("final-review")]
+        [Authorize(Roles = "Tutor")]
+        public async Task<IActionResult> FinalReviewGroupProject([FromBody] TutorReviewDto dto)
+        {
+            if (dto == null)
+                return BadRequest(new ApiResponse<string>(null, "Invalid data", false));
+
+           
+            int tutorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            var response = await _tutorReviewService.ReviewGroupProject(dto, tutorId);
+
+            if (!response.Success)
+                return BadRequest(response);
+
+            return Ok(response);
+        }
+
 
 
     }
