@@ -32,15 +32,28 @@ namespace Project_Management_System.Controllers.Admin
         [HttpGet("GetAllGroups")]
         public async Task<IActionResult> GetAllGroups(string department)
         {
-            var result =await _service.GetAllGroups(department);
+            var result = await _service.GetAllGroups(department);
             return Ok(result);
-       
+
         }
         [HttpDelete("group/{groupId}")]
         public async Task<IActionResult> DeleteGroup(int groupId)
         {
             var result = await _service.DeleteGroup(groupId);
             return result.Success ? Ok(result) : NotFound(result);
+        }
+        [HttpPatch("change-role/{id}")]
+        public async Task<IActionResult> ChangeUserRole(int id, string newRole)
+        {
+            var result = await _service.ChangeUserRole(id, newRole);
+            return Ok(result);
+        }
+
+        [HttpPatch("block-user/{id}")]
+        public async Task<IActionResult> BlockUser(int id, bool block)
+        {
+            var result = await _service.UserBlockStatus(id, block);
+            return Ok(result);
         }
     }
 }

@@ -120,6 +120,44 @@ namespace Application.Services.AdminService
                 return new ApiResponse<string>(null, $"Error: {ex.Message}", false);
             }
         }
+        public async Task<ApiResponse<string>> ChangeUserRole(int userId, string newRole)
+        {
+            try
+            {
+                var user = await _repository.GetById(userId);
+                if (user == null)
+                    return new ApiResponse<string>(null, "User not found", false);
+
+                user.Role = newRole;
+                await _repository.Update(user);
+
+                return new ApiResponse<string>("User role updated", "Success", true);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<string>(null, $"Error: {ex.Message}", false);
+            }
+        }
+        public async Task<ApiResponse<string>> UserBlockStatus(int userId, bool block)
+        {
+            try
+            {
+                var user = await _repository.GetById(userId);
+                if (user == null)
+                    return new ApiResponse<string>(null, "User not found", false);
+
+                user.IsBlocked = block;
+                await _repository.Update(user);
+
+                return new ApiResponse<string>($"User has been {(block ? "blocked" : "unblocked")}", "Success", true);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<string>(null, $"Error: {ex.Message}", false);
+            }
+        }
+
+
 
 
 

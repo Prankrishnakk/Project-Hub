@@ -55,6 +55,11 @@ namespace Infrastructure.Repositories.AdminRepository
             _context.ProjectGroups.Remove(group);
             return await _context.SaveChangesAsync() > 0;
         }
+        public async Task<bool> Update(Student user)
+        {
+            _context.Students.Update(user);
+            return await _context.SaveChangesAsync() > 0;
+        }
 
     }
 }

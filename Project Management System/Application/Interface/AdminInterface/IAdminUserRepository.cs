@@ -15,6 +15,7 @@ namespace Application.Interface.AdminInterface
         Task<ProjectGroup?> GetGroupById(int groupId);
         Task<bool> DeleteGroup(ProjectGroup group);
         Task<Student?> GetById(int id);
+        Task<bool> Update(Student user);
         Task<bool> Delete(Student user);
     }
 }
