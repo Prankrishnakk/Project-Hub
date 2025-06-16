@@ -22,6 +22,7 @@ namespace Domain.Model
         public virtual ICollection<ProjectGroup> TutoredGroups { get; set; }
        
         public virtual ICollection<StudentProject> StudentProjects { get; set; }
+        public virtual ICollection<ProjectRequest> ProjectRequests { get; set; }
 
 
 

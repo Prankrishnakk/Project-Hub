@@ -1,4 +1,5 @@
 ﻿using Application.Interface.StudentInterface;
+using Domain.Enum;
 using Domain.Model;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -19,20 +20,31 @@ namespace Infrastructure.Repositories.StudentRepository
             _context = context;
         }
 
-        public async Task<StudentProject> GetByStudentIdAsync(int studentId)
+        public async Task<StudentProject> GetByStudentId(int studentId)
         {
             return await _context.StudentProjects
                 .FirstOrDefaultAsync(p => p.StudentId == studentId);
         }
 
-        public async Task AddAsync(StudentProject project)
+        public async Task Add(StudentProject project)
         {
             await _context.StudentProjects.AddAsync(project);
             await _context.SaveChangesAsync();
         }
-        public async Task<Student?> GetStudentByIdAsync(int studentId)
+        public async Task<Student?> GetStudentById(int studentId)
         {
             return await _context.Students.FindAsync(studentId);
+        }
+
+        public async Task SaveProjectGroupRequest(ProjectRequest request)
+        {
+            await _context.ProjectRequests.AddAsync(request);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<ProjectRequest?> GetPendingRequestByStudentId(int studentId)
+        {
+            return await _context.ProjectRequests
+                .FirstOrDefaultAsync(r => r.StudentId == studentId && r.Status == RequestStatus.Requested);
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using Application.ApiResponse;
 using Application.Dto;
 using Application.Interface.TutorInterface;
+using AutoMapper;
 using Domain.Enum;
 using Domain.Model;
 using System;
@@ -11,10 +12,14 @@ using System.Threading.Tasks;
 public class TutorReviewService : ITutorReviewService
 {
     private readonly ITutorReviewRepository _repository;
+    private readonly IMapper _mapper;
 
-    public TutorReviewService(ITutorReviewRepository repository)
+    public TutorReviewService(ITutorReviewRepository repository, IMapper _mapper)
     {
         _repository = repository;
+        _mapper = _mapper;
+
+
     }
 
     public async Task<ApiResponse<string>> ReviewGroupProject(TutorReviewDto dto, int tutorId)
@@ -111,5 +116,37 @@ public class TutorReviewService : ITutorReviewService
 
         return new ApiResponse<string>("Final review submitted successfully.", "Final review completed", true);
     }
+    public async Task<ApiResponse<string>> ReviewProjectRequest(int tutorId, ReviewRequestDto dto)
+    {
+        var request = await _repository.GetRequestById(dto.RequestId);
+
+        if (request == null || request.TutorId != tutorId)
+            return new ApiResponse<string>(null, "Invalid request ID or unauthorized", false);
+
+        if (!Enum.TryParse<RequestStatus>(dto.Status, out var newStatus) ||
+            newStatus == RequestStatus.Requested)
+            return new ApiResponse<string>(null, "Invalid status. Must be Approved or Rejected.", false);
+
+        request.Status = newStatus;
+        await _repository.Save();
+
+        return new ApiResponse<string>("Status updated", "Success", true);
+    }
+    public async Task<ApiResponse<ICollection<ProjectRequestDetailsDto>>> GetRequestsForTutor(int tutorId)
+    {
+        var requests = await _repository.GetRequestsForTutor(tutorId);
+
+        var dtoList = requests.Select(r => new ProjectRequestDetailsDto
+        {
+            ReviewID = r.Id,
+            ProjectTitle = r.ProjectTitle,
+            ProjectDescription = r.ProjectDescription,
+        
+        }).ToList();
+
+        return new ApiResponse<ICollection<ProjectRequestDetailsDto>>(dtoList, "Requests fetched successfully.", true);
+    }
+
+
 
 }

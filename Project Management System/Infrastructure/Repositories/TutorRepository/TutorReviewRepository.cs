@@ -70,5 +70,26 @@ namespace Infrastructure.Repositories.TutorRepository
         {
             _context.ProjectGroups.Update(group);
         }
+        public async Task<List<ProjectRequest>> GetRequestsForTutor(int tutorId)
+        {
+            return await _context.ProjectRequests
+                .Where(r => r.TutorId == tutorId)
+                .Include(r => r.Student)
+                .ToListAsync();
+        }
+
+        public async Task<ProjectRequest> GetRequestById(int requestId)
+        {
+            return await _context.ProjectRequests.FirstOrDefaultAsync(r => r.Id == requestId);
+        }
+        public async Task<ICollection<ProjectRequest>> GetRequestsForTutorWithTutorInfo(int tutorId)
+        {
+            return await _context.ProjectRequests
+                .Include(r => r.Tutor)
+                .Where(r => r.TutorId == tutorId)
+                .ToListAsync();
+        }
+
+
     }
 }

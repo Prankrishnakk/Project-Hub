@@ -54,6 +54,6 @@ namespace Project_Management_System.Controllers.Admin
         {
             var result = await _service.UserBlockStatus(id, block);
             return Ok(result);
-        }
+        } 
     }
 }

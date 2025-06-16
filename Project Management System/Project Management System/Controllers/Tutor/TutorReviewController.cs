@@ -38,7 +38,7 @@ namespace Project_Management_System.Controllers.Tutor
             if (dto == null)
                 return BadRequest(new ApiResponse<string>(null, "Invalid data", false));
 
-           
+
             int tutorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             var response = await _tutorReviewService.ReviewGroupProject(dto, tutorId);
@@ -48,9 +48,24 @@ namespace Project_Management_System.Controllers.Tutor
 
             return Ok(response);
         }
+        [HttpPost("Review request")]
+        public async Task<IActionResult> ReviewRequest([FromBody] ReviewRequestDto dto)
+        {
+            int tutorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
+            var response = await _tutorReviewService.ReviewProjectRequest(tutorId, dto);
+
+            return response.Success ? Ok(response) : BadRequest(response);
+        }
+        [HttpGet("my-requests")]
+        public async Task<IActionResult> GetMyRequests()
+        {
+            int tutorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
+            var response = await _tutorReviewService.GetRequestsForTutor(tutorId);
+            return Ok(response);
 
 
 
+        }
     }
 }
 

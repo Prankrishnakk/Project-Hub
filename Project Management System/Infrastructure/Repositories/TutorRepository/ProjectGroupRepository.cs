@@ -27,7 +27,7 @@ namespace Infrastructure.Repositories.TutorRepository
             return await _context.Students
                 .Where(s => studentIds.Contains(s.Id)
                             && s.GroupId == null
-                            && s.Role == "Student") // ✅ Only valid students
+                            && s.Role == "Student") 
                 .ToListAsync();
         }
 
@@ -36,7 +36,7 @@ namespace Infrastructure.Repositories.TutorRepository
             return await _context.Students
                 .Where(s => studentIds.Contains(s.Id)
                             && (s.GroupId == null || s.GroupId == groupId)
-                            && s.Role == "Student") // ✅ Only valid students
+                            && s.Role == "Student") 
                 .ToListAsync();
         }
 

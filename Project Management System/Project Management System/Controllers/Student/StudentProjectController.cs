@@ -52,6 +52,18 @@ namespace Project_Management_System.Controllers.Student
 
             return Ok(response);
         }
+        [HttpPost("submit-project-request")]
+        public async Task<IActionResult> SubmitProjectRequest([FromBody] ProjectRequestDto dto)
+        {
+            var studentIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (studentIdClaim == null)
+                return Unauthorized(new { message = "Invalid token or student not logged in" });
 
+            int studentId = int.Parse(studentIdClaim.Value);
+
+            var response = await _studentProjectService.SubmitProjectRequest(dto, studentId);
+
+            return response.Success ? Ok(response) : BadRequest(response);
+        }
     }
 }

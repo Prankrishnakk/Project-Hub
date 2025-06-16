@@ -12,6 +12,7 @@ namespace Infrastructure.Context
         public DbSet<ProjectGroup> ProjectGroups { get; set; }
         public DbSet<StudentProject> StudentProjects { get; set; }
         public DbSet<TutorReview> TutorReviews { get; set; }
+        public DbSet<ProjectRequest> ProjectRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -70,7 +71,21 @@ namespace Infrastructure.Context
                 .HasForeignKey(tr => tr.TutorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-           
+
+         
+            modelBuilder.Entity<ProjectRequest>()
+                .HasOne(pr => pr.Student)
+                .WithMany(s => s.ProjectRequests)
+                .HasForeignKey(pr => pr.StudentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            
+            modelBuilder.Entity<ProjectRequest>()
+                .HasOne(pr => pr.Tutor)
+                .WithMany() 
+                .HasForeignKey(pr => pr.TutorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

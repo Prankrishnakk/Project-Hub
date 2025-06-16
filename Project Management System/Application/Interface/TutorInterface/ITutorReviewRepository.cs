@@ -15,6 +15,9 @@ namespace Application.Interface.TutorInterface
         Task<List<StudentProject>> GetFinalProjectsByGroupId(int groupId);
         Task<List<TutorReview>> GetReviewsByTutorId(int tutorId);
         Task<List<Student>> GetStudentsByGroupId(int groupId);
+        Task<List<ProjectRequest>> GetRequestsForTutor(int tutorId);
+        Task<ICollection<ProjectRequest>> GetRequestsForTutorWithTutorInfo(int tutorId);
+        Task<ProjectRequest> GetRequestById(int requestId);
         Task Add(TutorReview review);
         Task Save();
         void UpdateProjectGroup(ProjectGroup projectGroup);
