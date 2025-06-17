@@ -1,13 +1,15 @@
-
+﻿
 using Application.Interface.AdminInterface;
 using Application.Interface.AuthInterface;
 using Application.Interface.HodInterface;
+using Application.Interface.NotificationInterface;
 using Application.Interface.StudentInterface;
 using Application.Interface.TutorInterface;
 using Application.Mapper;
 using Application.Services.AdminService;
 using Application.Services.AuthServices;
 using Application.Services.HodService;
+using Application.Services.SignalR;
 using Application.Services.StudentServices;
 using Application.Services.TutorService;
 using Infrastructure.Context;
@@ -16,7 +18,9 @@ using Infrastructure.Repositories.AuthRepository;
 using Infrastructure.Repositories.HodRepository;
 using Infrastructure.Repositories.StudentRepository;
 using Infrastructure.Repositories.TutorRepository;
+using Infrastructure.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -53,8 +57,24 @@ namespace Project_Management_System
             builder.Services.AddScoped<IProjectSubmissionService, ProjectSubmissionService>();
             builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
             builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
 
 
+            //✅ Add SignalR
+            builder.Services.AddSignalR();
+
+            // ✅ Add CORS (for frontend access to SignalR)
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials()
+                          .SetIsOriginAllowed(_ => true); 
+                });
+            });
 
 
 
@@ -137,6 +157,9 @@ namespace Project_Management_System
 
             var app = builder.Build();
 
+            // ✅ Use CORS
+            app.UseCors("AllowAll");
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -152,6 +175,7 @@ namespace Project_Management_System
 
 
             app.MapControllers();
+            app.MapHub<NotificationHub>("/notificationhub");
 
             app.Run();
         }

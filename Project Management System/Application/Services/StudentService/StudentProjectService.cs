@@ -1,5 +1,6 @@
 ﻿using Application.ApiResponse;
 using Application.Dto;
+using Application.Interface.NotificationInterface;
 using Application.Interface.StudentInterface;
 using Domain.Model;
 using System;
@@ -13,10 +14,12 @@ namespace Application.Services.StudentServices
     public class StudentProjectService : IStudentProjectService
     {
         private readonly IStudentProjectRepository _repository;
-
-        public StudentProjectService(IStudentProjectRepository repository)
+        private readonly INotificationService _notificationService;
+        public StudentProjectService(IStudentProjectRepository repository, INotificationService notificationService)
         {
             _repository = repository;
+            _notificationService = notificationService;
+
         }
 
         public async Task<ApiResponse<string>> UploadProject(int studentId, FileUploadDto dto)
@@ -26,6 +29,11 @@ namespace Application.Services.StudentServices
 
             if (dto.ProjectFiles.Count > 2)
                 return new ApiResponse<string>(null, "You can only upload up to 2 files at a time.", false);
+            var student = await _repository.GetStudentById(studentId);
+
+            if (student == null)
+                return new ApiResponse<string>(null, "Student not found", false);
+
 
             foreach (var file in dto.ProjectFiles)
             {
@@ -45,6 +53,18 @@ namespace Application.Services.StudentServices
                 };
 
                 await _repository.Add(project);
+                var studentWithGroup = await _repository.GetStudentWithGroup(studentId);
+
+                var tutorId = studentWithGroup?.Group?.TutorId;
+                if (tutorId.HasValue)
+                {
+                    await _notificationService.SendNotification(
+                        tutorId.Value,
+                        "Project Uploaded",
+                        $"Student {studentWithGroup.Name} uploaded a new project file."
+                    );
+                }
+
             }
 
             return new ApiResponse<string>(null, "Projects uploaded successfully", true);
@@ -84,7 +104,15 @@ namespace Application.Services.StudentServices
 
                 await _repository.Add(finalProject);
             }
+            var studentWithGroup = await _repository.GetStudentWithGroup(studentId);
 
+            var tutorId = studentWithGroup?.Group?.TutorId;
+            if (tutorId.HasValue)
+            {
+                await _notificationService.SendNotification(
+                    tutorId.Value,"Final Project Submitted",$"Student {studentWithGroup.Name} submitted final project files."
+                    );
+            }
             return new ApiResponse<string>(null, "Final project files submitted successfully.", true);
         }
 
@@ -112,6 +140,16 @@ namespace Application.Services.StudentServices
                 };
 
                 await _repository.SaveProjectGroupRequest(request);
+
+
+
+                await _notificationService.SendNotification(
+                         dto.TutorId,
+                        "New Project Request",
+                        $"Student {student.Name} has sent you a project request titled '{dto.ProjectTitle}'."
+                );
+
+
                 return new ApiResponse<string>("Project request submitted successfully.", "Success", true);
             }
             catch (Exception ex)

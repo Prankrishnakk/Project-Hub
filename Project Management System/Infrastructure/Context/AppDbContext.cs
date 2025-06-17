@@ -13,6 +13,8 @@ namespace Infrastructure.Context
         public DbSet<StudentProject> StudentProjects { get; set; }
         public DbSet<TutorReview> TutorReviews { get; set; }
         public DbSet<ProjectRequest> ProjectRequests { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -46,6 +46,14 @@ namespace Infrastructure.Repositories.StudentRepository
             return await _context.ProjectRequests
                 .FirstOrDefaultAsync(r => r.StudentId == studentId && r.Status == RequestStatus.Requested);
         }
+        public async Task<Student?> GetStudentWithGroup(int studentId)
+        {
+            return await _context.Students
+                .Include(s => s.Group)
+                .FirstOrDefaultAsync(s => s.Id == studentId);
+        }
+
+
 
     }
 }
