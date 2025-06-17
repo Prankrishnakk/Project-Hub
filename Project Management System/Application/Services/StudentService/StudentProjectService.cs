@@ -21,30 +21,42 @@ namespace Application.Services.StudentServices
 
         public async Task<ApiResponse<string>> UploadProject(int studentId, FileUploadDto dto)
         {
-            if (dto.ProjectFile == null || dto.ProjectFile.Length == 0)
-                return new ApiResponse<string>(null, "No file uploaded", false);
+            if (dto.ProjectFiles == null || dto.ProjectFiles.Count == 0)
+                return new ApiResponse<string>(null, "No files uploaded", false);
 
-            using var ms = new MemoryStream();
-            await dto.ProjectFile.CopyToAsync(ms);
-            var fileBytes = ms.ToArray();
+            if (dto.ProjectFiles.Count > 2)
+                return new ApiResponse<string>(null, "You can only upload up to 2 files at a time.", false);
 
-            var project = new StudentProject
+            foreach (var file in dto.ProjectFiles)
             {
-                StudentId = studentId,
-                FileName = dto.ProjectFile.FileName,
-                FileData = fileBytes,
-                ContentType = dto.ProjectFile.ContentType,
-                FileSize = dto.ProjectFile.Length,
-                UploadedAt = DateTime.UtcNow
-            };
+                using var ms = new MemoryStream();
+                await file.CopyToAsync(ms);
+                var fileBytes = ms.ToArray();
 
-            await _repository.Add(project);
-            return new ApiResponse<string>(dto.ProjectFile.FileName, "Project uploaded successfully", true);
+                var project = new StudentProject
+                {
+                    StudentId = studentId,
+                    FileName = file.FileName,
+                    FileData = fileBytes,
+                    ContentType = file.ContentType,
+                    FileSize = file.Length,
+                    UploadedAt = DateTime.UtcNow,
+                    FinalSubmission = false
+                };
+
+                await _repository.Add(project);
+            }
+
+            return new ApiResponse<string>(null, "Projects uploaded successfully", true);
         }
+
         public async Task<ApiResponse<string>> UploadFinalProject(int studentId, FileUploadDto dto)
         {
-            if (dto.ProjectFile == null || dto.ProjectFile.Length == 0)
-                return new ApiResponse<string>(null, "No file uploaded", false);
+            if (dto.ProjectFiles == null || dto.ProjectFiles.Count == 0)
+                return new ApiResponse<string>(null, "No files uploaded", false);
+
+            if (dto.ProjectFiles.Count > 2)
+                return new ApiResponse<string>(null, "You can only upload up to 2 final project files.", false);
 
             var student = await _repository.GetStudentById(studentId);
             if (student == null)
@@ -53,26 +65,30 @@ namespace Application.Services.StudentServices
             if (student.GroupId == null)
                 return new ApiResponse<string>(null, "Student is not assigned to a project group.", false);
 
-            using var ms = new MemoryStream();
-            await dto.ProjectFile.CopyToAsync(ms);
-            var fileBytes = ms.ToArray();
-
-            var finalProject = new StudentProject
+            foreach (var file in dto.ProjectFiles)
             {
-                StudentId = studentId,
-                FileName = dto.ProjectFile.FileName,
-                FileData = fileBytes,
-                ContentType = dto.ProjectFile.ContentType,
-                FileSize = dto.ProjectFile.Length,
-                UploadedAt = DateTime.UtcNow,
-                FinalSubmission = true,
+                using var ms = new MemoryStream();
+                await file.CopyToAsync(ms);
+                var fileBytes = ms.ToArray();
 
-            };
+                var finalProject = new StudentProject
+                {
+                    StudentId = studentId,
+                    FileName = file.FileName,
+                    FileData = fileBytes,
+                    ContentType = file.ContentType,
+                    FileSize = file.Length,
+                    UploadedAt = DateTime.UtcNow,
+                    FinalSubmission = true
+                };
 
-            await _repository.Add(finalProject);
-            return new ApiResponse<string>(dto.ProjectFile.FileName, "Final project submitted successfully.", true);
+                await _repository.Add(finalProject);
+            }
+
+            return new ApiResponse<string>(null, "Final project files submitted successfully.", true);
         }
-      public async Task<ApiResponse<string>> SubmitProjectRequest(ProjectRequestDto dto, int studentId)
+
+        public async Task<ApiResponse<string>> SubmitProjectRequest(ProjectRequestDto dto, int studentId)
       {
             try
             {

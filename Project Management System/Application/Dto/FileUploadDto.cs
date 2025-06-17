@@ -9,6 +9,6 @@ namespace Application.Dto
 {
     public class FileUploadDto
     {
-        public IFormFile ProjectFile { get; set; }
+        public List<IFormFile> ProjectFiles { get; set; }
     }
 }
