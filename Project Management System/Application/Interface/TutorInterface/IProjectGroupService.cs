@@ -12,6 +12,6 @@ namespace Application.Interface.TutorInterface
     {
         Task<ApiResponse<string>> CreateProjectGroup(ProjectGroupCreateDto dto, int tutorId);
         Task<ApiResponse<string>> UpdateProjectGroup(int groupId, ProjectGroupCreateDto dto, int tutorId);
-        Task<ApiResponse<string>> DeleteProjectGroup(int groupId);
+        Task<ApiResponse<string>> RemoveStudentFromGroup(int groupId, int studentId);
     }
 }

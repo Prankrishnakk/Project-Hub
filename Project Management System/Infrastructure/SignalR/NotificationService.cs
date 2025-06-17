@@ -49,7 +49,7 @@ namespace Application.Services.SignalR
                 Title = n.Title,
                 Message = n.Message,
                 CreatedAt = n.CreatedAt,
-                IsRead = n.IsRead
+           
             }).ToList();
         }
     

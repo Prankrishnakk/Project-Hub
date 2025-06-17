@@ -1,5 +1,6 @@
 ﻿using Application.ApiResponse;
 using Application.Dto;
+using Application.Interface.NotificationInterface;
 using Application.Interface.TutorInterface;
 using AutoMapper;
 using Domain.Enum;
@@ -14,11 +15,13 @@ namespace Application.Services.TutorService
     public class ProjectGroupService : IProjectGroupService
     {
         private readonly IProjectGroupRepository _repository;
+        private readonly INotificationService _notificationService;
         private readonly IMapper _mapper;
 
-        public ProjectGroupService(IProjectGroupRepository repository, IMapper mapper)
+        public ProjectGroupService(IProjectGroupRepository repository, IMapper mapper,INotificationService notificationService)
         {
             _repository = repository;
+            _notificationService = notificationService;
             _mapper = mapper;
         }
 
@@ -34,7 +37,6 @@ namespace Application.Services.TutorService
                     return new ApiResponse<string>(null, "Invalid tutor ID or user is not a tutor.", false);
 
                 var students = await _repository.GetUngroupedStudentsAsync(dto.StudentIds);
-
                 if (students.Count != dto.StudentIds.Count)
                     return new ApiResponse<string>(null, "Some students are already in a group, not found, or have invalid roles.", false);
 
@@ -48,6 +50,16 @@ namespace Application.Services.TutorService
 
                 await _repository.AddProjectGroupAsync(group);
                 await _repository.SaveAsync();
+
+                
+                foreach (var student in students)
+                {
+                    await _notificationService.SendNotification(
+                        student.Id,
+                        "Added to Project Group",
+                        $"You have been added to the project group '{group.GroupName}' under tutor {tutor.Name}."
+                    );
+                }
 
                 return new ApiResponse<string>(
                     $"Group '{dto.GroupName}' created with {students.Count} students.",
@@ -95,7 +107,16 @@ namespace Application.Services.TutorService
 
                     existingGroup.Students.Clear();
                     foreach (var student in students)
+                    {
                         existingGroup.Students.Add(student);
+
+                            
+                        await _notificationService.SendNotification(
+                            student.Id,
+                            "Updated Project Group",
+                            $"You have been added/updated in the project group '{existingGroup.GroupName}' under tutor {tutor.Name}."
+                        );
+                    }
                 }
 
                 await _repository.UpdateProjectGroupAsync(existingGroup);
@@ -112,7 +133,9 @@ namespace Application.Services.TutorService
             }
         }
 
-        public async Task<ApiResponse<string>> DeleteProjectGroup(int groupId)
+
+
+        public async Task<ApiResponse<string>> RemoveStudentFromGroup(int groupId, int studentId)
         {
             try
             {
@@ -120,14 +143,24 @@ namespace Application.Services.TutorService
                 if (group == null)
                     return new ApiResponse<string>(null, "Project group not found.", false);
 
-                await _repository.DeleteProjectGroupAsync(group);
-                await _repository.SaveAsync();
+                var student = group.Students.FirstOrDefault(s => s.Id == studentId);
+                if (student == null)
+                    return new ApiResponse<string>(null, "Student not found in this group.", false);
 
-                return new ApiResponse<string>("Group deletion executed", "Project group and its students deleted successfully.", true);
+                if (student.ProjectStatus == (int)ProjectStatus.Assigned)
+                    return new ApiResponse<string>(null, "Cannot remove student. Project status is not 'Assigned'.", false);
+
+                group.Students.Remove(student);
+
+                await _repository.SaveAsync();
+                await _notificationService.SendNotification(
+                student.Id,"Removed from Project Group",$"You have been removed from the project group '{group.GroupName}'." );
+
+                return new ApiResponse<string>("Student removed", "Student removed from group successfully.", true);
             }
             catch (Exception ex)
             {
-                return new ApiResponse<string>(null, $"Error deleting project group: {ex.Message}", false);
+                return new ApiResponse<string>(null, $"Error removing student from group: {ex.Message}", false);
             }
         }
     }

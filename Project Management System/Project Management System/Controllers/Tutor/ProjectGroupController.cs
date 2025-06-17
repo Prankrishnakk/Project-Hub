@@ -55,13 +55,13 @@ namespace Project_Management_System.Controllers.Tutor
             }
         }
 
-        [HttpDelete("delete-Tutor/{groupId}")]
-        [Authorize(Roles = "Tutor")]
-        public async Task<IActionResult> DeleteProjectGroup(int groupId)
+        [HttpDelete("{groupId}/student/{studentId}")]
+         [Authorize(Roles = "Tutor")]
+        public async Task<IActionResult> RemoveStudentFromGroup(int groupId, int studentId)
         {
             try
             {
-                var response = await _service.DeleteProjectGroup(groupId);
+                var response = await _service.RemoveStudentFromGroup(groupId, studentId);
                 return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)

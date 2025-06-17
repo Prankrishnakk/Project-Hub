@@ -8,6 +8,8 @@ namespace Domain.Model
 {
     public class Student
     {
+        public int ProjectStatus;
+
         public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
