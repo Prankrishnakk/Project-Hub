@@ -32,7 +32,7 @@ namespace Project_Management_System.Controllers.Tutor
             return response.Success ? Ok(response) : BadRequest(response);
         }
         [HttpPost("final-review")]
-        [Authorize(Roles = "Tutor")]
+       
         public async Task<IActionResult> FinalReviewGroupProject([FromBody] TutorReviewDto dto)
         {
             if (dto == null)

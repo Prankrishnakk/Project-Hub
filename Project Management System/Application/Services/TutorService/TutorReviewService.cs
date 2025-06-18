@@ -8,18 +8,17 @@ using Domain.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 public class TutorReviewService : ITutorReviewService
 {
     private readonly ITutorReviewRepository _repository;
-    private readonly IMapper _mapper;
     private readonly INotificationService _notificationService;
 
     public TutorReviewService(ITutorReviewRepository repository, IMapper mapper, INotificationService notificationService)
     {
         _repository = repository;
-        _mapper = mapper;
         _notificationService = notificationService;
     }
 
@@ -52,7 +51,6 @@ public class TutorReviewService : ITutorReviewService
             Mark = dto.Mark,
             ReviewedAt = DateTime.Now
         };
-
         await _repository.Add(review);
 
         var projectGroup = await _repository.GetProjectGroupById(dto.GroupId);
@@ -103,6 +101,7 @@ public class TutorReviewService : ITutorReviewService
             Mark = dto.Mark,
             ReviewedAt = DateTime.Now,
         };
+  
 
         await _repository.Add(review);
 
@@ -110,12 +109,13 @@ public class TutorReviewService : ITutorReviewService
         if (projectGroup != null)
         {
             projectGroup.Status = ProjectStatus.Completed;
-            _repository.UpdateProjectGroup(projectGroup);
+            _repository.UpdateProjectGroup(projectGroup); 
         }
+     
 
         await _repository.Save();
 
-     
+
         foreach (var student in groupStudents)
         {
             await _notificationService.SendNotification(

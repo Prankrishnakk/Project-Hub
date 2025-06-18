@@ -28,13 +28,13 @@ namespace Project_Management_System.Controllers.Student
 
             int studentId = int.Parse(studentIdClaim.Value);
 
-   
+
             var response = await _studentProjectService.UploadProject(studentId, dto);
 
             if (!response.Success)
-                return BadRequest(response); 
+                return BadRequest(response);
 
-            return Ok(response); 
+            return Ok(response);
         }
         [HttpPost("upload-final")]
         public async Task<IActionResult> UploadFinalProject([FromForm] FileUploadDto dto)
@@ -65,5 +65,22 @@ namespace Project_Management_System.Controllers.Student
 
             return response.Success ? Ok(response) : BadRequest(response);
         }
+
+
+        [HttpGet("reviewed-requests")]
+        public async Task<IActionResult> GetReviewedRequests()
+        {
+            var studentIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (studentIdClaim == null)
+                return Unauthorized(new { message = "Invalid token or student not logged in" });
+
+            int studentId = int.Parse(studentIdClaim.Value);
+            var result = await _studentProjectService.GetReviewedRequests(studentId);
+
+            return result.Success ? Ok(result) : BadRequest(result);
+        }
+
+
+
     }
 }

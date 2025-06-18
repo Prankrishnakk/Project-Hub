@@ -13,6 +13,7 @@ namespace Application.Interface.StudentInterface
         Task<Student> GetStudentById(int studentId);
         Task SaveProjectGroupRequest(ProjectRequest request);
         Task<ProjectRequest?> GetPendingRequestByStudentId(int studentId);
+        Task<List<ProjectRequest>> GetReviewedRequestsByStudentId(int studentId);
         Task<Student?> GetStudentWithGroup(int studentId);
         Task Add(StudentProject project);
       

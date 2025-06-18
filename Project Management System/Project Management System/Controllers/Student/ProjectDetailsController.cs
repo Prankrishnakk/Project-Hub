@@ -18,7 +18,7 @@ namespace Project_Management_System.Controllers.Student
             _projectDetailsService = projectDetailsService;
         }
 
-        [Authorize(Roles = "Student")]
+       
         [HttpGet("my-group")]
         public async Task<IActionResult> GetMyGroupProject()
         {

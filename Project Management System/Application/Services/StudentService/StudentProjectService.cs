@@ -2,6 +2,9 @@
 using Application.Dto;
 using Application.Interface.NotificationInterface;
 using Application.Interface.StudentInterface;
+using AutoMapper;
+
+using Domain.Enum;
 using Domain.Model;
 using System;
 using System.Collections.Generic;
@@ -19,6 +22,7 @@ namespace Application.Services.StudentServices
         {
             _repository = repository;
             _notificationService = notificationService;
+           
 
         }
 
@@ -110,14 +114,15 @@ namespace Application.Services.StudentServices
             if (tutorId.HasValue)
             {
                 await _notificationService.SendNotification(
-                    tutorId.Value,"Final Project Submitted",$"Student {studentWithGroup.Name} submitted final project files."
+                    tutorId.Value, "Final Project Submitted", $"Student {studentWithGroup.Name} submitted final project files."
                     );
             }
             return new ApiResponse<string>(null, "Final project files submitted successfully.", true);
         }
 
         public async Task<ApiResponse<string>> SubmitProjectRequest(ProjectRequestDto dto, int studentId)
-      {
+
+        {
             try
             {
                 var student = await _repository.GetStudentById(studentId);
@@ -131,7 +136,7 @@ namespace Application.Services.StudentServices
 
                 var request = new ProjectRequest
                 {
-                   
+
                     StudentId = studentId,
                     TutorId = dto.TutorId,
                     ProjectTitle = dto.ProjectTitle,
@@ -156,7 +161,21 @@ namespace Application.Services.StudentServices
             {
                 return new ApiResponse<string>(null, $"Error: {ex.Message}", false);
             }
-      }
+        }
+        public async Task<ApiResponse<List<ReviewRequestDto>>> GetReviewedRequests(int studentId)
+        {
+            var requests = await _repository.GetReviewedRequestsByStudentId(studentId); 
+
+            var response = requests.Select(r => new ReviewRequestDto
+            {
+                RequestId = r.Id,
+                Status = r.Status.ToString()
+            }).ToList();
+
+            return new ApiResponse<List<ReviewRequestDto>>(response, "Reviewed requests fetched", true);
+        }
+
+
 
     }
 }

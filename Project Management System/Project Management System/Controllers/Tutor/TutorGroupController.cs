@@ -10,7 +10,7 @@ namespace Project_Management_System.Controllers.Tutor
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Tutor")]
+   
     public class TutorGroupController : ControllerBase
     {
         private readonly ITutorGroupService _tutorGroupService;

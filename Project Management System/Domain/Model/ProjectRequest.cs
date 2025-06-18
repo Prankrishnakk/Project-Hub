@@ -17,5 +17,7 @@ namespace Domain.Model
         public RequestStatus Status { get; set; }   
         public virtual Student Student { get; set; }
         public virtual Student Tutor { get; set; }
+
+    
     }
 }

@@ -56,7 +56,8 @@ namespace Infrastructure.Repositories.TutorRepository
 
         public async Task<ProjectGroup> GetProjectGroupById(int groupId)
         {
-            return await _context.ProjectGroups.FindAsync(groupId);
+            return await _context.ProjectGroups
+           .FirstOrDefaultAsync(g => g.Id == groupId);
         }
 
         public async Task<List<StudentProject>> GetFinalProjectsByGroupId(int groupId)

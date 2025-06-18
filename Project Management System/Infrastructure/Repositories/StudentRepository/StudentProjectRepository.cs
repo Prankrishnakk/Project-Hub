@@ -52,6 +52,13 @@ namespace Infrastructure.Repositories.StudentRepository
                 .Include(s => s.Group)
                 .FirstOrDefaultAsync(s => s.Id == studentId);
         }
+        public async Task<List<ProjectRequest>> GetReviewedRequestsByStudentId(int studentId)
+        {
+            return await _context.ProjectRequests
+                .Where(r => r.StudentId == studentId && r.Status != RequestStatus.Requested)
+                .ToListAsync();
+        }
+
 
 
 
