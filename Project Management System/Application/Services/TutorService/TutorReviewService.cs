@@ -74,17 +74,22 @@ public class TutorReviewService : ITutorReviewService
 
     public async Task<ApiResponse<string>> FinalReviewGroupProject(TutorReviewDto dto, int tutorId)
     {
+  
         var groupExists = await _repository.GroupExists(dto.GroupId);
         if (!groupExists)
             return new ApiResponse<string>(null, $"Group with ID {dto.GroupId} does not exist.", false);
 
+ 
         var groupStudents = await _repository.GetStudentsByGroupId(dto.GroupId);
         if (!groupStudents.Any())
             return new ApiResponse<string>(null, "No students found in this group.", false);
 
+      
         var finalProjects = await _repository.GetFinalProjectsByGroupId(dto.GroupId);
         var submittedStudentIds = finalProjects.Select(p => p.StudentId).ToHashSet();
-        var unsubmittedStudents = groupStudents.Where(s => !submittedStudentIds.Contains(s.Id)).ToList();
+        var unsubmittedStudents = groupStudents
+            .Where(s => !submittedStudentIds.Contains(s.Id))
+            .ToList();
 
         if (unsubmittedStudents.Any())
         {
@@ -101,20 +106,13 @@ public class TutorReviewService : ITutorReviewService
             Mark = dto.Mark,
             ReviewedAt = DateTime.Now,
         };
-  
-
         await _repository.Add(review);
 
         var projectGroup = await _repository.GetProjectGroupById(dto.GroupId);
         if (projectGroup != null)
-        {
             projectGroup.Status = ProjectStatus.Completed;
-            _repository.UpdateProjectGroup(projectGroup); 
-        }
-     
 
         await _repository.Save();
-
 
         foreach (var student in groupStudents)
         {
@@ -124,9 +122,13 @@ public class TutorReviewService : ITutorReviewService
                 $"Your final project has been reviewed. Feedback: {dto.Feedback}"
             );
         }
-
-        return new ApiResponse<string>("Final review submitted successfully.", "Final review completed", true);
+        return new ApiResponse<string>(
+            "Final review submitted successfully.",
+            "Final review completed",
+            true
+        );
     }
+
 
     public async Task<ApiResponse<string>> ReviewProjectRequest(int tutorId, ReviewRequestDto dto)
     {

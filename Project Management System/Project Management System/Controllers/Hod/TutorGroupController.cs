@@ -16,8 +16,8 @@ namespace Project_Management_System.Controllers.Hod
             _departmentGroupsService = departmentGroupsService;
         }
 
-        // GET: api/hod/groups/{department}
-        [Authorize(Roles = "HOD")]
+        
+     
         [HttpGet("groups/{department}")]
         public async Task<IActionResult> GetGroupsByDepartment(string department)
         {

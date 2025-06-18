@@ -20,6 +20,6 @@ namespace Application.Interface.TutorInterface
         Task<ProjectRequest> GetRequestById(int requestId);
         Task Add(TutorReview review);
         Task Save();
-        void UpdateProjectGroup(ProjectGroup projectGroup);
+    
     }
 }

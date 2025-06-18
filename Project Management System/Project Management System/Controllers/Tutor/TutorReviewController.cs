@@ -41,7 +41,7 @@ namespace Project_Management_System.Controllers.Tutor
 
             int tutorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            var response = await _tutorReviewService.ReviewGroupProject(dto, tutorId);
+            var response = await _tutorReviewService.FinalReviewGroupProject(dto, tutorId);
 
             if (!response.Success)
                 return BadRequest(response);
