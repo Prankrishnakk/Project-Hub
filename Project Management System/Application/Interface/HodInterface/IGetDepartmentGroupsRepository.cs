@@ -10,5 +10,6 @@ namespace Application.Interface.HodInterface
     public interface IGetDepartmentGroupsRepository
     {
         Task<List<ProjectGroup>> FetchGroupsByDepartmentAsync(string department);
+        Task<List<ProjectGroup>> FetchCompletedProjectsByDepartmentAsync(string department);
     }
 }

@@ -8,7 +8,7 @@ namespace Project_Management_System.Controllers.Student
 {
     [Route("api/student/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Student")]
+ 
     public class FeedbackController : ControllerBase
     {
         private readonly IStudentFeedbackService _service;

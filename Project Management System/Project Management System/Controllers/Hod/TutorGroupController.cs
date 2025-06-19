@@ -28,6 +28,16 @@ namespace Project_Management_System.Controllers.Hod
 
             return Ok(result);
         }
+
+        [HttpGet("completed-projects")]
+        public async Task<IActionResult> GetCompletedProjects(string department)
+        {
+            var result = await _departmentGroupsService.GetCompletedProjectsByDepartment(department);
+            return Ok(result);
+        }
+
+
+
     }
 }
 

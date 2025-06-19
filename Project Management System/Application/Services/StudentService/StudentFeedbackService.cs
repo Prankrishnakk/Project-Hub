@@ -2,8 +2,6 @@
 using Application.Interface.StudentInterface;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Services.StudentServices
@@ -19,7 +17,15 @@ namespace Application.Services.StudentServices
 
         public async Task<ICollection<TutorFeedbackDto>> GetMyFeedbacks(int studentId)
         {
-            return await _repository.GetFeedbacksByStudentId(studentId);
+            try
+            {
+                return await _repository.GetFeedbacksByStudentId(studentId);
+            }
+            catch (Exception ex)
+            {
+    
+                throw new ApplicationException($"Failed to fetch feedbacks for student ID {studentId}: {ex.Message}", ex);
+            }
         }
     }
 }

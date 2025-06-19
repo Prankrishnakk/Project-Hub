@@ -30,54 +30,73 @@ namespace Application.Services.AuthServices
 
         public async Task<string> Register(StudentRegDto dto)
         {
-            // Trim inputs
-            dto.Name = dto.Name?.Trim();
-            dto.Email = dto.Email?.Trim();
+            try
+            {
+                // Trim inputs
+                dto.Name = dto.Name?.Trim();
+                dto.Email = dto.Email?.Trim();
 
-            if (dto.Password != dto.ConfirmPassword)
-                throw new ArgumentException("Passwords do not match.");
+                if (dto.Password != dto.ConfirmPassword)
+                    throw new ArgumentException("Passwords do not match.");
 
-            if (await _repository.ExistsByEmailAsync(dto.Email))
-                throw new InvalidOperationException($"An account with email '{dto.Email}' already exists.");
+                if (await _repository.ExistsByEmailAsync(dto.Email))
+                    throw new InvalidOperationException($"An account with email '{dto.Email}' already exists.");
 
-            var student = _mapper.Map<Student>(dto);
-            student.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+                var student = _mapper.Map<Student>(dto);
+                student.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
-            await _repository.AddAsync(student);
-            return "Registration successful.";
+                await _repository.AddAsync(student);
+                return "Registration successful.";
+            }
+            catch (Exception ex)
+            {
+                
+                throw new ApplicationException("An error occurred during registration: " + ex.Message, ex);
+            }
         }
 
         public async Task<AuthResponseDto> Login(StudentLoginDto dto)
         {
-            var student = await _repository.GetByEmailAsync(dto.Email);
-
-            if (student == null || !BCrypt.Net.BCrypt.Verify(dto.Password, student.Password))
-                throw new AuthenticationException("Invalid email or password.");
-
-            var claims = new[]
+            try
             {
-            new Claim(ClaimTypes.NameIdentifier, student.Id.ToString()),
-            new Claim(ClaimTypes.Name, student.Name),
-            new Claim(ClaimTypes.Role, student.Role)
-        };
+                var student = await _repository.GetByEmailAsync(dto.Email);
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                if (student == null || !BCrypt.Net.BCrypt.Verify(dto.Password, student.Password))
+                    throw new AuthenticationException("Invalid email or password.");
 
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddDays(1),
-                signingCredentials: creds
-            );
+                var claims = new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, student.Id.ToString()),
+                    new Claim(ClaimTypes.Name, student.Name),
+                    new Claim(ClaimTypes.Role, student.Role)
+                };
 
-            return new AuthResponseDto
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                var token = new JwtSecurityToken(
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddDays(1),
+                    signingCredentials: creds
+                );
+
+                return new AuthResponseDto
+                {
+                    Token = new JwtSecurityTokenHandler().WriteToken(token),
+                    Role = student.Role,
+                    Name = student.Name,
+                    Email = student.Email
+                };
+            }
+            catch (AuthenticationException)
             {
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
-                Role = student.Role,
-                Name = student.Name,
-                Email = student.Email
-            };
+                throw; 
+            }
+            catch (Exception ex)
+            {
+                
+                throw new ApplicationException("An error occurred during login: " + ex.Message, ex);
+            }
         }
     }
-
 }

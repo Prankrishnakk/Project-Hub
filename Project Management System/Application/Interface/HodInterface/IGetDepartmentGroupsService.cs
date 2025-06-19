@@ -10,5 +10,6 @@ namespace Application.Interface.HodInterface
     public interface IGetDepartmentGroupsService
     {
         Task<ICollection<DepartmentProjectGroupDto>> GetGroupsByDepartment(string department);
+        Task<ICollection<CompletedProjectDto>> GetCompletedProjectsByDepartment(string department);
     }
 }

@@ -3,7 +3,6 @@ using Application.Interface.HodInterface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Services.HodService
@@ -19,19 +18,44 @@ namespace Application.Services.HodService
 
         public async Task<ICollection<DepartmentProjectGroupDto>> GetGroupsByDepartment(string department)
         {
-            var groups = await _repository.FetchGroupsByDepartmentAsync(department);
-           
-            return groups.Select(g => new DepartmentProjectGroupDto
-            
+            try
             {
-                GroupId = g.Id,
-                GroupName = g.GroupName,
-                ProjectTitle = g.ProjectTitle,
-                TutorName = g.Tutor?.Name ?? "Unknown",
-                StudentNames = g.Students.Select(s => s.Name).ToList()
-            }).ToList();
-            
+                var groups = await _repository.FetchGroupsByDepartmentAsync(department);
+
+                return groups.Select(g => new DepartmentProjectGroupDto
+                {
+                    GroupId = g.Id,
+                    GroupName = g.GroupName,
+                    ProjectTitle = g.ProjectTitle,
+                    TutorName = g.Tutor?.Name ?? "Unknown",
+                    StudentNames = g.Students.Select(s => s.Name).ToList()
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Failed to fetch project groups for department '{department}': {ex.Message}", ex);
+            }
         }
 
+        public async Task<ICollection<CompletedProjectDto>> GetCompletedProjectsByDepartment(string department)
+        {
+            try
+            {
+                var projects = await _repository.FetchCompletedProjectsByDepartmentAsync(department);
+
+                return projects.Select(p => new CompletedProjectDto
+                {
+                    ProjectId = p.Id,
+                    GroupName = p.GroupName,
+                    ProjectTitle = p.ProjectTitle,
+                    TutorName = p.Tutor?.Name ?? "Unknown",
+                    StudentNames = p.Students.Select(s => s.Name).ToList()
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Failed to fetch completed projects for department '{department}': {ex.Message}", ex);
+            }
+        }
     }
 }

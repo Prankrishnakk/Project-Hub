@@ -1,4 +1,5 @@
 ﻿using Application.Interface.HodInterface;
+using Domain.Enum;
 using Domain.Model;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -27,5 +28,15 @@ namespace Infrastructure.Repositories.HodRepository
                 .Where(pg => pg.Tutor.Department == department)
                 .ToListAsync();
         }
+        public async Task<List<ProjectGroup>> FetchCompletedProjectsByDepartmentAsync(string department)
+        {
+            return await _context.ProjectGroups
+                .Include(g => g.Tutor)
+                .Include(g => g.Students)
+                .Where(g => g.Status == ProjectStatus.Completed &&
+                            g.Students.Any(s => s.Department == department))
+                .ToListAsync();
+        }
+
     }
 }
