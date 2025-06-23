@@ -20,14 +20,16 @@ public class TutorReviewService : ITutorReviewService
         _repository = repository;
         _notificationService = notificationService;
     }
-
     public async Task<ApiResponse<string>> ReviewGroupProject(TutorReviewDto dto, int tutorId)
     {
         try
         {
-            var groupExists = await _repository.GroupExists(dto.GroupId);
-            if (!groupExists)
+            var projectGroup = await _repository.GetProjectGroupById(dto.GroupId);
+            if (projectGroup == null)
                 return new ApiResponse<string>(null, $"Group with ID {dto.GroupId} does not exist.", false);
+
+            if (projectGroup.TutorId != tutorId)
+                return new ApiResponse<string>(null, "Unauthorized: You are not assigned to this group.", false);
 
             var groupStudents = await _repository.GetStudentsByGroupId(dto.GroupId);
             if (!groupStudents.Any())
@@ -54,10 +56,7 @@ public class TutorReviewService : ITutorReviewService
             };
             await _repository.Add(review);
 
-            var projectGroup = await _repository.GetProjectGroupById(dto.GroupId);
-            if (projectGroup != null)
-                projectGroup.Status = ProjectStatus.Ongoing;
-
+            projectGroup.Status = ProjectStatus.Ongoing;
             await _repository.Save();
 
             foreach (var student in groupStudents)
@@ -81,9 +80,12 @@ public class TutorReviewService : ITutorReviewService
     {
         try
         {
-            var groupExists = await _repository.GroupExists(dto.GroupId);
-            if (!groupExists)
+            var projectGroup = await _repository.GetProjectGroupById(dto.GroupId);
+            if (projectGroup == null)
                 return new ApiResponse<string>(null, $"Group with ID {dto.GroupId} does not exist.", false);
+
+            if (projectGroup.TutorId != tutorId)
+                return new ApiResponse<string>(null, "Unauthorized: You are not assigned to this group.", false);
 
             var groupStudents = await _repository.GetStudentsByGroupId(dto.GroupId);
             if (!groupStudents.Any())
@@ -112,10 +114,7 @@ public class TutorReviewService : ITutorReviewService
             };
             await _repository.Add(review);
 
-            var projectGroup = await _repository.GetProjectGroupById(dto.GroupId);
-            if (projectGroup != null)
-                projectGroup.Status = ProjectStatus.Completed;
-
+            projectGroup.Status = ProjectStatus.Completed;
             await _repository.Save();
 
             foreach (var student in groupStudents)
@@ -177,6 +176,7 @@ public class TutorReviewService : ITutorReviewService
             var dtoList = requests.Select(r => new ProjectRequestDetailsDto
             {
                 ReviewID = r.Id,
+                ProjectID = r.ProjectId,
                 ProjectTitle = r.ProjectTitle,
                 ProjectDescription = r.ProjectDescription,
             }).ToList();
@@ -188,4 +188,5 @@ public class TutorReviewService : ITutorReviewService
             return new ApiResponse<ICollection<ProjectRequestDetailsDto>>(null, $"Error fetching requests: {ex.Message}", false);
         }
     }
+
 }

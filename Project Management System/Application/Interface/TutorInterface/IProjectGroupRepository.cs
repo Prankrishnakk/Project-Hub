@@ -9,13 +9,15 @@ namespace Application.Interface.TutorInterface
 {
     public interface IProjectGroupRepository
     {
-        Task<Student> GetStudentByIdAsync(int id);
-        Task<List<Student>> GetUngroupedStudentsAsync(List<int> studentIds);
-        Task<List<Student>> GetUngroupedOrBelongToGroupAsync(List<int> studentIds, int groupId);
-        Task UpdateProjectGroupAsync(ProjectGroup group);
-        Task<ProjectGroup> GetProjectGroupByIdAsync(int groupId);
-        Task DeleteProjectGroupAsync(ProjectGroup group);
-        Task AddProjectGroupAsync(ProjectGroup group);
-        Task SaveAsync();
+        Task<Student> GetStudentById(int id);
+        Task<List<Student>> GetUngroupedStudents(List<int> studentIds);
+        Task<List<Student>> GetUngroupedOrBelongToGroup(List<int> studentIds, int groupId);
+        Task<List<ProjectRequest>> GetApprovedRequestsForStudentsAndTutor(List<int> studentIds, int tutorId);
+        Task UpdateProjectGroup(ProjectGroup group);
+        Task<Project> GetProjectById(int projectId);    
+        Task<ProjectGroup> GetProjectGroupById(int groupId);
+        Task DeleteProjectGroup(ProjectGroup group);
+        Task AddProjectGroup(ProjectGroup group);
+        Task Save();
     }
 }

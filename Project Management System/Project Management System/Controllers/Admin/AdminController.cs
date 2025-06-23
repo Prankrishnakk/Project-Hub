@@ -6,11 +6,11 @@ namespace Project_Management_System.Controllers.Admin
 {
     [Route("api/admin")]
     [ApiController]
-    public class AdminUserController : ControllerBase
+    public class AdminController : ControllerBase
     {
         private readonly IAdminUserService _service;
 
-        public AdminUserController(IAdminUserService service)
+        public AdminController(IAdminUserService service)
         {
             _service = service;
         }

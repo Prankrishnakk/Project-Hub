@@ -59,6 +59,12 @@ namespace Project_Management_System
             builder.Services.AddScoped<IAdminUserService, AdminUserService>();
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
             builder.Services.AddScoped<INotificationService, NotificationService>();
+            builder.Services.AddScoped<IProjectAddService, ProjectAddService>();
+            builder.Services.AddScoped<IProjectAddRepository, ProjectAddRepository>(); 
+
+
+
+
 
 
             //✅ Add SignalR
@@ -175,7 +181,8 @@ namespace Project_Management_System
 
 
             app.MapControllers();
-            app.MapHub<NotificationHub>("/notificationhub");
+
+            app.MapHub<NotificationHub>("/notificationhub"); //SignalR
 
             app.Run();
         }

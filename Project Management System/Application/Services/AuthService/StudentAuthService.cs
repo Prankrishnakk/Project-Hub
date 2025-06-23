@@ -59,6 +59,8 @@ namespace Application.Services.AuthServices
         {
             try
             {
+                dto.Email = dto.Email?.Trim();
+
                 var student = await _repository.GetByEmailAsync(dto.Email);
 
                 if (student == null || !BCrypt.Net.BCrypt.Verify(dto.Password, student.Password))

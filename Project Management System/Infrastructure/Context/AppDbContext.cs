@@ -14,28 +14,25 @@ namespace Infrastructure.Context
         public DbSet<TutorReview> TutorReviews { get; set; }
         public DbSet<ProjectRequest> ProjectRequests { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Project> Projects { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-           
             modelBuilder.Entity<Student>()
                 .Property(s => s.IsBlocked)
                 .HasDefaultValue(false);
 
-
-
+            // ProjectGroup configuration
             modelBuilder.Entity<ProjectGroup>(entity =>
             {
-               
                 entity.Property(e => e.Status)
-                      .HasConversion<int>() 
+                      .HasConversion<int>()
                       .HasDefaultValue(ProjectStatus.Assigned);
             });
 
- 
             modelBuilder.Entity<ProjectGroup>()
                 .HasOne(pg => pg.Tutor)
                 .WithMany(s => s.TutoredGroups)
@@ -43,7 +40,13 @@ namespace Infrastructure.Context
                 .OnDelete(DeleteBehavior.Restrict)
                 .IsRequired(false);
 
-      
+            modelBuilder.Entity<ProjectGroup>()
+                .HasOne(pg => pg.Project)
+                .WithMany(p => p.ProjectGroups)
+                .HasForeignKey(pg => pg.ProjectId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+
             modelBuilder.Entity<Student>()
                 .HasOne(s => s.Group)
                 .WithMany(pg => pg.Students)
@@ -51,43 +54,43 @@ namespace Infrastructure.Context
                 .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false);
 
-       
             modelBuilder.Entity<Student>()
                 .HasMany(s => s.StudentProjects)
                 .WithOne(sp => sp.Student)
                 .HasForeignKey(sp => sp.StudentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-       
-      
             modelBuilder.Entity<TutorReview>()
                 .HasOne<ProjectGroup>()
                 .WithMany()
                 .HasForeignKey(tr => tr.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-     
             modelBuilder.Entity<TutorReview>()
                 .HasOne(tr => tr.Tutor)
                 .WithMany()
                 .HasForeignKey(tr => tr.TutorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
-         
+            // ProjectRequest configuration
             modelBuilder.Entity<ProjectRequest>()
                 .HasOne(pr => pr.Student)
                 .WithMany(s => s.ProjectRequests)
                 .HasForeignKey(pr => pr.StudentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            
             modelBuilder.Entity<ProjectRequest>()
                 .HasOne(pr => pr.Tutor)
-                .WithMany() 
+                .WithMany()
                 .HasForeignKey(pr => pr.TutorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<ProjectRequest>()
+                .HasOne(pr => pr.Project)
+                .WithMany(p => p.ProjectRequests)
+                .HasForeignKey(pr => pr.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
+
     }
 }

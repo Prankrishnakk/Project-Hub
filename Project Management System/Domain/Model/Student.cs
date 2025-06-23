@@ -15,7 +15,7 @@ namespace Domain.Model
         public string Email { get; set; }
         public string Password { get; set; }
         public string Department { get; set; }
-        public string Role { get; set; } = "Student";
+        public string Role { get; set; } 
         public int? GroupId { get; set; }
         public bool IsBlocked { get; set; }
         public virtual ProjectGroup? Group { get; set; }

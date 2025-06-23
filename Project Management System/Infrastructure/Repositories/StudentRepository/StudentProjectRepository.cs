@@ -58,6 +58,21 @@ namespace Infrastructure.Repositories.StudentRepository
                 .Where(r => r.StudentId == studentId && r.Status != RequestStatus.Requested)
                 .ToListAsync();
         }
+        public async Task<Project> GetProjectById(int projectId)
+        {
+            return await _context.Projects
+                .Include(p => p.ProjectRequests) 
+                .Include(p => p.ProjectGroups)   
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+        }
+        public async Task<ProjectRequest> GetPendingRequestByStudentAndTutor(int studentId, int tutorId)
+        {
+            return await _context.ProjectRequests
+                .FirstOrDefaultAsync(r =>
+                    r.StudentId == studentId &&
+                    r.TutorId == tutorId &&
+                    r.Status == RequestStatus.Requested); 
+        }
 
 
 

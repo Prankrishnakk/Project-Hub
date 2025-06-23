@@ -6,17 +6,48 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class @new : Migration
+    public partial class First : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RecipientId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Projects",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Projects", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "ProjectGroups",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    ProjectId = table.Column<int>(type: "int", nullable: true),
                     GroupName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProjectTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TutorId = table.Column<int>(type: "int", nullable: true),
@@ -25,6 +56,12 @@ namespace Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProjectGroups", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectGroups_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -50,6 +87,42 @@ namespace Infrastructure.Migrations
                         principalTable: "ProjectGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjectRequests",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    TutorId = table.Column<int>(type: "int", nullable: false),
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    ProjectTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProjectDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectRequests_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectRequests_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectRequests_Students_TutorId",
+                        column: x => x.TutorId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -108,8 +181,28 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProjectGroups_ProjectId",
+                table: "ProjectGroups",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjectGroups_TutorId",
                 table: "ProjectGroups",
+                column: "TutorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectRequests_ProjectId",
+                table: "ProjectRequests",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectRequests_StudentId",
+                table: "ProjectRequests",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectRequests_TutorId",
+                table: "ProjectRequests",
                 column: "TutorId");
 
             migrationBuilder.CreateIndex(
@@ -145,14 +238,27 @@ namespace Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                name: "FK_ProjectGroups_Projects_ProjectId",
+                table: "ProjectGroups");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_ProjectGroups_Students_TutorId",
                 table: "ProjectGroups");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
+
+            migrationBuilder.DropTable(
+                name: "ProjectRequests");
 
             migrationBuilder.DropTable(
                 name: "StudentProjects");
 
             migrationBuilder.DropTable(
                 name: "TutorReviews");
+
+            migrationBuilder.DropTable(
+                name: "Projects");
 
             migrationBuilder.DropTable(
                 name: "Students");

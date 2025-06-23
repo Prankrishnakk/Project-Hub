@@ -15,14 +15,22 @@ namespace Application.Dto
       
         public string Name { get; set; }
 
+
         [Required(ErrorMessage = "Email is required.")]
-        [EmailAddress(ErrorMessage = "Invalid email address format.")]
+        [RegularExpression(@"^[a-zA-Z0-9]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+            ErrorMessage = "Invalid email address format. Special characters before '@' are not allowed.")]
         public string Email { get; set; }
+
 
         [Required(ErrorMessage = "Department is required.")]
         [StringLength(50, ErrorMessage = "Department must not exceed 50 characters.")]
         [RegularExpression(@"^(CSE|ECE|EEE|ME|CE|IT)$", ErrorMessage = "Department must be one of the following: CSE, ECE, EEE, ME, CE, IT.")]
         public string Department { get; set; }
+
+
+        [Required(ErrorMessage = "Role is required.")]
+        [RegularExpression("^(Student|Tutor|HOD)$", ErrorMessage = "Role must be either Student, Tutor, or HOD.")]
+        public string Role { get; set; }
 
 
         [Required(ErrorMessage = "Password is required.")]

@@ -32,24 +32,35 @@ namespace Application.Services.TutorService
                 if (dto.StudentIds == null || dto.StudentIds.Count < 2)
                     return new ApiResponse<string>(null, "Project group must contain at least 2 students.", false);
 
-                var tutor = await _repository.GetStudentByIdAsync(tutorId);
+                var tutor = await _repository.GetStudentById(tutorId);
                 if (tutor == null || tutor.Role != "Tutor")
                     return new ApiResponse<string>(null, "Invalid tutor ID or user is not a tutor.", false);
 
-                var students = await _repository.GetUngroupedStudentsAsync(dto.StudentIds);
+                var approvedRequests = await _repository.GetApprovedRequestsForStudentsAndTutor(dto.StudentIds, tutorId);
+                if (approvedRequests.Count != dto.StudentIds.Count)
+                    return new ApiResponse<string>(null, "All students must have an approved project request for this tutor.", false);
+
+                var students = await _repository.GetUngroupedStudents(dto.StudentIds);
                 if (students.Count != dto.StudentIds.Count)
                     return new ApiResponse<string>(null, "Some students are already in a group, not found, or have invalid roles.", false);
 
                 if (students.Any(s => s.Department != tutor.Department))
                     return new ApiResponse<string>(null, "All students must be from the same department as the tutor.", false);
 
+                var project = await _repository.GetProjectById(dto.ProjectId);
+                if (project == null)
+                    return new ApiResponse<string>(null, "Invalid Project ID.", false);
+
+
                 var group = _mapper.Map<ProjectGroup>(dto);
                 group.Students = students;
                 group.TutorId = tutorId;
+                group.ProjectId = dto.ProjectId;  
                 group.Status = ProjectStatus.Assigned;
 
-                await _repository.AddProjectGroupAsync(group);
-                await _repository.SaveAsync();
+
+                await _repository.AddProjectGroup(group);
+                await _repository.Save();
 
                 
                 foreach (var student in students)
@@ -76,13 +87,22 @@ namespace Application.Services.TutorService
         {
             try
             {
-                var existingGroup = await _repository.GetProjectGroupByIdAsync(groupId);
+                var existingGroup = await _repository.GetProjectGroupById(groupId);
                 if (existingGroup == null)
                     return new ApiResponse<string>(null, "Project group not found.", false);
 
-                var tutor = await _repository.GetStudentByIdAsync(tutorId);
+                var tutor = await _repository.GetStudentById(tutorId);
                 if (tutor == null || tutor.Role != "Tutor")
                     return new ApiResponse<string>(null, "Invalid tutor ID or user is not a tutor.", false);
+
+                if (dto.ProjectId != 0)
+                {
+                    var project = await _repository.GetProjectById(dto.ProjectId);
+                    if (project == null)
+                        return new ApiResponse<string>(null, "Invalid Project ID.", false);
+
+                    existingGroup.ProjectId = dto.ProjectId;
+                }
 
                 if (!string.IsNullOrWhiteSpace(dto.GroupName))
                     existingGroup.GroupName = dto.GroupName;
@@ -97,7 +117,7 @@ namespace Application.Services.TutorService
                     if (dto.StudentIds.Count < 2)
                         return new ApiResponse<string>(null, "Project group must contain at least 2 students.", false);
 
-                    var students = await _repository.GetUngroupedOrBelongToGroupAsync(dto.StudentIds, groupId);
+                    var students = await _repository.GetUngroupedOrBelongToGroup(dto.StudentIds, groupId);
 
                     if (students.Count != dto.StudentIds.Count)
                         return new ApiResponse<string>(null, "Some students are already in another group, not found, or have invalid roles.", false);
@@ -110,7 +130,6 @@ namespace Application.Services.TutorService
                     {
                         existingGroup.Students.Add(student);
 
-                            
                         await _notificationService.SendNotification(
                             student.Id,
                             "Updated Project Group",
@@ -119,8 +138,8 @@ namespace Application.Services.TutorService
                     }
                 }
 
-                await _repository.UpdateProjectGroupAsync(existingGroup);
-                await _repository.SaveAsync();
+                await _repository.UpdateProjectGroup(existingGroup);
+                await _repository.Save();
 
                 return new ApiResponse<string>(
                     $"Group '{existingGroup.GroupName}' updated successfully with {existingGroup.Students.Count} students.",
@@ -139,7 +158,7 @@ namespace Application.Services.TutorService
         {
             try
             {
-                var group = await _repository.GetProjectGroupByIdAsync(groupId);
+                var group = await _repository.GetProjectGroupById(groupId);
                 if (group == null)
                     return new ApiResponse<string>(null, "Project group not found.", false);
 
@@ -152,7 +171,7 @@ namespace Application.Services.TutorService
 
                 group.Students.Remove(student);
 
-                await _repository.SaveAsync();
+                await _repository.Save();
                 await _notificationService.SendNotification(
                 student.Id,"Removed from Project Group",$"You have been removed from the project group '{group.GroupName}'." );
 

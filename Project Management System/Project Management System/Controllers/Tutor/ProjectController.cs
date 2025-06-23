@@ -11,14 +11,23 @@ namespace Project_Management_System.Controllers.Tutor
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProjectGroupController : ControllerBase
+    public class ProjectController : ControllerBase
     {
         private readonly IProjectGroupService _service;
+        private readonly IProjectAddService _projectService;
 
-        public ProjectGroupController(IProjectGroupService service)
+        public ProjectController(IProjectGroupService service, IProjectAddService projectService)
         {
             _service = service;
+            _projectService = projectService;
         }
+        [HttpPost("add")]
+        public async Task<IActionResult> AddProject([FromBody] ProjectCreateDto dto)
+        {
+            var response = await _projectService.AddProject(dto);
+            return response.Success ? Ok(response) : BadRequest(response);
+        }
+    
 
         [HttpPost("create-Tutor")]
         [Authorize(Roles = "Tutor")]

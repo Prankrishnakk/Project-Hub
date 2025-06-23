@@ -10,6 +10,7 @@ namespace Application.Dto
     {
       
         public string GroupName { get; set; }
+        public int ProjectId { get; set; }
         public string ProjectTitle { get; set; }
         public List<int> StudentIds { get; set; }
     }

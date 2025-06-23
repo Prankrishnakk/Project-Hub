@@ -11,6 +11,7 @@ namespace Application.Dto
     {
      
         public int TutorId { get; set; }
+        public int ProjectId { get; set; }
         public string ProjectTitle { get; set; }
         public string ProjectDescription { get; set; }
       

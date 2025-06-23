@@ -36,6 +36,19 @@ namespace Application.Services.StudentServices
                 if (student == null)
                     return new ApiResponse<string>(null, "Student not found", false);
 
+                var studentWithGroup = await _repository.GetStudentWithGroup(studentId);
+                var tutorId = studentWithGroup?.Group?.TutorId;
+
+                if (tutorId.HasValue)
+                {
+                    // ✅ Now you can check for pending request with both IDs
+                    var existingRequest = await _repository.GetPendingRequestByStudentAndTutor(studentId, tutorId.Value);
+                    if (existingRequest != null)
+                    {
+                        return new ApiResponse<string>(null, "You already have a pending request with this tutor. Please wait for their response.", false);
+                    }
+                }
+
                 foreach (var file in dto.ProjectFiles)
                 {
                     using var ms = new MemoryStream();
@@ -54,18 +67,15 @@ namespace Application.Services.StudentServices
                     };
 
                     await _repository.Add(project);
+                }
 
-                    var studentWithGroup = await _repository.GetStudentWithGroup(studentId);
-                    var tutorId = studentWithGroup?.Group?.TutorId;
-
-                    if (tutorId.HasValue)
-                    {
-                        await _notificationService.SendNotification(
-                            tutorId.Value,
-                            "Project Uploaded",
-                            $"Student {studentWithGroup.Name} uploaded a new project file."
-                        );
-                    }
+                if (tutorId.HasValue)
+                {
+                    await _notificationService.SendNotification(
+                        tutorId.Value,
+                        "Project Uploaded",
+                        $"Student {studentWithGroup.Name} uploaded a new project file."
+                    );
                 }
 
                 return new ApiResponse<string>(null, "Projects uploaded successfully", true);
@@ -93,6 +103,17 @@ namespace Application.Services.StudentServices
                 if (student.GroupId == null)
                     return new ApiResponse<string>(null, "Student is not assigned to a project group.", false);
 
+                var studentWithGroup = await _repository.GetStudentWithGroup(studentId);
+                var tutorId = studentWithGroup?.Group?.TutorId;
+
+                if (!tutorId.HasValue)
+                    return new ApiResponse<string>(null, "Tutor not assigned to the student's group.", false);
+
+                // ✅ Check if an approved request exists
+                var approvedRequest = await _repository.GetPendingRequestByStudentAndTutor(studentId, tutorId.Value);
+                if (approvedRequest == null)
+                    return new ApiResponse<string>(null, "You can only upload final project after your request is approved.", false);
+
                 foreach (var file in dto.ProjectFiles)
                 {
                     using var ms = new MemoryStream();
@@ -113,17 +134,11 @@ namespace Application.Services.StudentServices
                     await _repository.Add(finalProject);
                 }
 
-                var studentWithGroup = await _repository.GetStudentWithGroup(studentId);
-                var tutorId = studentWithGroup?.Group?.TutorId;
-
-                if (tutorId.HasValue)
-                {
-                    await _notificationService.SendNotification(
-                        tutorId.Value,
-                        "Final Project Submitted",
-                        $"Student {studentWithGroup.Name} submitted final project files."
-                    );
-                }
+                await _notificationService.SendNotification(
+                    tutorId.Value,
+                    "Final Project Submitted",
+                    $"Student {studentWithGroup.Name} submitted final project files."
+                );
 
                 return new ApiResponse<string>(null, "Final project files submitted successfully.", true);
             }
@@ -133,23 +148,36 @@ namespace Application.Services.StudentServices
             }
         }
 
+
         public async Task<ApiResponse<string>> SubmitProjectRequest(ProjectRequestDto dto, int studentId)
         {
             try
             {
                 var student = await _repository.GetStudentById(studentId);
                 var tutor = await _repository.GetStudentById(dto.TutorId);
+                var project = await _repository.GetProjectById(dto.ProjectId);
 
                 if (student == null || tutor == null || tutor.Role != "Tutor")
                     return new ApiResponse<string>(null, "Invalid student or tutor.", false);
 
+                if (project == null)
+                    return new ApiResponse<string>(null, "Invalid or non-existent project ID.", false);
+
                 if (student.Department != tutor.Department)
                     return new ApiResponse<string>(null, "Tutor must be from the same department.", false);
+
+                // ✅ Check if a pending request already exists
+                var existingRequest = await _repository.GetPendingRequestByStudentAndTutor(studentId, dto.TutorId);
+                if (existingRequest != null)
+                {
+                    return new ApiResponse<string>(null, "You already have a pending request with this tutor. Please wait for their response.", false);
+                }
 
                 var request = new ProjectRequest
                 {
                     StudentId = studentId,
                     TutorId = dto.TutorId,
+                    ProjectId = dto.ProjectId,
                     ProjectTitle = dto.ProjectTitle,
                     ProjectDescription = dto.ProjectDescription,
                     Status = Domain.Enum.RequestStatus.Requested
