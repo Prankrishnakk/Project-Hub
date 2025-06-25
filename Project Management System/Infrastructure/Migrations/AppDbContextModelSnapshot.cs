@@ -120,10 +120,6 @@ namespace Infrastructure.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ProjectTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -211,6 +207,12 @@ namespace Infrastructure.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<bool>("FinalSubmission")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsReviewed")
                         .HasColumnType("bit");
 
                     b.Property<int>("StudentId")

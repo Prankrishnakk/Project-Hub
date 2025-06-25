@@ -4,6 +4,7 @@ SELECT TOP (1000) [Id]
       ,[TutorId]
   FROM [ProjectHub].[dbo].[ProjectGroups]
   select * from Students
+  select * from Projects
   select * from StudentProjects
   select *  from ProjectRequests
   select *from ProjectGroups

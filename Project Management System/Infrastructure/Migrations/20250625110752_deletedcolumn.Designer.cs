@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250620043504_TableDropped")]
-    partial class TableDropped
+    [Migration("20250625110752_deletedcolumn")]
+    partial class deletedcolumn
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,23 @@ namespace Infrastructure.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("Domain.Model.Project", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Projects");
+                });
+
             modelBuilder.Entity("Domain.Model.ProjectGroup", b =>
                 {
                     b.Property<int>("Id")
@@ -66,6 +83,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("GroupName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ProjectTitle")
                         .IsRequired()
@@ -80,6 +100,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
 
                     b.HasIndex("TutorId");
 
@@ -98,9 +120,8 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProjectTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -112,6 +133,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
 
                     b.HasIndex("StudentId");
 
@@ -189,6 +212,12 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("FinalSubmission")
                         .HasColumnType("bit");
 
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsReviewed")
+                        .HasColumnType("bit");
+
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
@@ -239,16 +268,29 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Model.ProjectGroup", b =>
                 {
+                    b.HasOne("Domain.Model.Project", "Project")
+                        .WithMany("ProjectGroups")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("Domain.Model.Student", "Tutor")
                         .WithMany("TutoredGroups")
                         .HasForeignKey("TutorId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Project");
 
                     b.Navigation("Tutor");
                 });
 
             modelBuilder.Entity("Domain.Model.ProjectRequest", b =>
                 {
+                    b.HasOne("Domain.Model.Project", "Project")
+                        .WithMany("ProjectRequests")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Model.Student", "Student")
                         .WithMany("ProjectRequests")
                         .HasForeignKey("StudentId")
@@ -260,6 +302,8 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("TutorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Project");
 
                     b.Navigation("Student");
 
@@ -302,6 +346,13 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Tutor");
+                });
+
+            modelBuilder.Entity("Domain.Model.Project", b =>
+                {
+                    b.Navigation("ProjectGroups");
+
+                    b.Navigation("ProjectRequests");
                 });
 
             modelBuilder.Entity("Domain.Model.ProjectGroup", b =>

@@ -2,11 +2,13 @@
 using Application.Dto;
 using Application.Interface.NotificationInterface;
 using Application.Interface.StudentInterface;
+using Domain.Enum;
 using Domain.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Application.Services.StudentServices
@@ -36,18 +38,26 @@ namespace Application.Services.StudentServices
                 if (student == null)
                     return new ApiResponse<string>(null, "Student not found", false);
 
-                var studentWithGroup = await _repository.GetStudentWithGroup(studentId);
-                var tutorId = studentWithGroup?.Group?.TutorId;
+                if (student.GroupId == null)
+                    return new ApiResponse<string>(null, "Student is not assigned to any project group.", false);
 
-                if (tutorId.HasValue)
-                {
-                    // ✅ Now you can check for pending request with both IDs
-                    var existingRequest = await _repository.GetPendingRequestByStudentAndTutor(studentId, tutorId.Value);
-                    if (existingRequest != null)
-                    {
-                        return new ApiResponse<string>(null, "You already have a pending request with this tutor. Please wait for their response.", false);
-                    }
-                }
+                var studentWithGroup = await _repository.GetStudentWithGroup(studentId);
+                var group = studentWithGroup?.Group;
+
+                if (group == null)
+                    return new ApiResponse<string>(null, "Project group not found.", false);
+
+                var groupId = group.Id;
+                var tutorId = group.TutorId;
+
+                if (!tutorId.HasValue)
+                    return new ApiResponse<string>(null, "Tutor not assigned to the student's group.", false);
+
+                // ✅ Check if the last non-final submission is reviewed
+                var hasUnreviewedProject = await _repository.GetUnreviewedProjectSubmissions(studentId);
+                if (hasUnreviewedProject)
+                    return new ApiResponse<string>(null, "Wait for tutor to review your previous project submission.", false);
+
 
                 foreach (var file in dto.ProjectFiles)
                 {
@@ -58,33 +68,33 @@ namespace Application.Services.StudentServices
                     var project = new StudentProject
                     {
                         StudentId = studentId,
+                        GroupId = groupId,
                         FileName = file.FileName,
                         FileData = fileBytes,
                         ContentType = file.ContentType,
                         FileSize = file.Length,
                         UploadedAt = DateTime.UtcNow,
-                        FinalSubmission = false
+                        FinalSubmission = false,
+                        IsReviewed = false
                     };
 
                     await _repository.Add(project);
                 }
 
-                if (tutorId.HasValue)
-                {
-                    await _notificationService.SendNotification(
-                        tutorId.Value,
-                        "Project Uploaded",
-                        $"Student {studentWithGroup.Name} uploaded a new project file."
-                    );
-                }
+                await _notificationService.SendNotification(
+                    tutorId.Value,
+                    "Project Uploaded",
+                    $"Student {studentWithGroup.Name} uploaded a new project file."
+                );
 
-                return new ApiResponse<string>(null, "Projects uploaded successfully", true);
+                return new ApiResponse<string>(null, "Project files uploaded successfully.", true);
             }
             catch (Exception ex)
             {
                 return new ApiResponse<string>(null, $"Error uploading project: {ex.Message}", false);
             }
         }
+
 
         public async Task<ApiResponse<string>> UploadFinalProject(int studentId, FileUploadDto dto)
         {
@@ -104,15 +114,26 @@ namespace Application.Services.StudentServices
                     return new ApiResponse<string>(null, "Student is not assigned to a project group.", false);
 
                 var studentWithGroup = await _repository.GetStudentWithGroup(studentId);
-                var tutorId = studentWithGroup?.Group?.TutorId;
+                var group = studentWithGroup?.Group;
+
+                if (group == null)
+                    return new ApiResponse<string>(null, "Project group not found.", false);
+
+                var groupId = group.Id;
+                var tutorId = group.TutorId;
 
                 if (!tutorId.HasValue)
                     return new ApiResponse<string>(null, "Tutor not assigned to the student's group.", false);
 
-                // ✅ Check if an approved request exists
+                // ✅ Must have an approved request
                 var approvedRequest = await _repository.GetPendingRequestByStudentAndTutor(studentId, tutorId.Value);
                 if (approvedRequest == null)
                     return new ApiResponse<string>(null, "You can only upload final project after your request is approved.", false);
+
+                // ✅ Allow only if last final submission is reviewed
+                var isLastReviewed = await _repository.HasReviewedLastFinalProject(studentId);
+                if (!isLastReviewed)
+                    return new ApiResponse<string>(null, "Wait for tutor to review your previous final submission.", false);
 
                 foreach (var file in dto.ProjectFiles)
                 {
@@ -123,12 +144,14 @@ namespace Application.Services.StudentServices
                     var finalProject = new StudentProject
                     {
                         StudentId = studentId,
+                        GroupId = groupId,
                         FileName = file.FileName,
                         FileData = fileBytes,
                         ContentType = file.ContentType,
                         FileSize = file.Length,
                         UploadedAt = DateTime.UtcNow,
-                        FinalSubmission = true
+                        FinalSubmission = true,
+                        IsReviewed = false
                     };
 
                     await _repository.Add(finalProject);
@@ -178,7 +201,6 @@ namespace Application.Services.StudentServices
                     StudentId = studentId,
                     TutorId = dto.TutorId,
                     ProjectId = dto.ProjectId,
-                    ProjectTitle = dto.ProjectTitle,
                     ProjectDescription = dto.ProjectDescription,
                     Status = Domain.Enum.RequestStatus.Requested
                 };
@@ -188,7 +210,7 @@ namespace Application.Services.StudentServices
                 await _notificationService.SendNotification(
                     dto.TutorId,
                     "New Project Request",
-                    $"Student {student.Name} has sent you a project request titled '{dto.ProjectTitle}'."
+                    $"Student {student.Name} has sent you a project request ID'{dto.ProjectId}'."
                 );
 
                 return new ApiResponse<string>("Project request submitted successfully.", "Success", true);

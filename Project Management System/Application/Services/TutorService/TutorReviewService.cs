@@ -36,6 +36,7 @@ public class TutorReviewService : ITutorReviewService
                 return new ApiResponse<string>(null, "No students found in this group.", false);
 
             var studentProjects = await _repository.GetStudentProjectsByGroupId(dto.GroupId);
+
             var submittedStudentIds = studentProjects.Select(p => p.StudentId).ToHashSet();
             var unsubmittedStudents = groupStudents.Where(s => !submittedStudentIds.Contains(s.Id)).ToList();
 
@@ -45,6 +46,7 @@ public class TutorReviewService : ITutorReviewService
                 return new ApiResponse<string>(null, $"Review not allowed. The following students haven't submitted their project: {names}", false);
             }
 
+       
             var review = new TutorReview
             {
                 ReviewId = dto.ReviewId,
@@ -56,9 +58,17 @@ public class TutorReviewService : ITutorReviewService
             };
             await _repository.Add(review);
 
+        
+            foreach (var project in studentProjects)
+            {
+                project.IsReviewed = true;
+            }
+
+    
             projectGroup.Status = ProjectStatus.Ongoing;
             await _repository.Save();
 
+     
             foreach (var student in groupStudents)
             {
                 await _notificationService.SendNotification(
@@ -75,6 +85,7 @@ public class TutorReviewService : ITutorReviewService
             return new ApiResponse<string>(null, $"Error reviewing project: {ex.Message}", false);
         }
     }
+
 
     public async Task<ApiResponse<string>> FinalReviewGroupProject(TutorReviewDto dto, int tutorId)
     {
@@ -113,6 +124,11 @@ public class TutorReviewService : ITutorReviewService
                 ReviewedAt = DateTime.Now,
             };
             await _repository.Add(review);
+
+            foreach (var project in finalProjects)
+            {
+                project.IsReviewed = true;
+            }
 
             projectGroup.Status = ProjectStatus.Completed;
             await _repository.Save();
@@ -177,7 +193,6 @@ public class TutorReviewService : ITutorReviewService
             {
                 ReviewID = r.Id,
                 ProjectID = r.ProjectId,
-                ProjectTitle = r.ProjectTitle,
                 ProjectDescription = r.ProjectDescription,
             }).ToList();
 

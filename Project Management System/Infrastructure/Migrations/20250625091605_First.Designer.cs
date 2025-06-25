@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250623042506_First")]
+    [Migration("20250625091605_First")]
     partial class First
     {
         /// <inheritdoc />
@@ -214,6 +214,12 @@ namespace Infrastructure.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<bool>("FinalSubmission")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsReviewed")
                         .HasColumnType("bit");
 
                     b.Property<int>("StudentId")
