@@ -77,7 +77,7 @@ namespace Infrastructure.Repositories.StudentRepository
                 .FirstOrDefaultAsync(r =>
                     r.StudentId == studentId &&
                     r.TutorId == tutorId &&
-                    r.Status == RequestStatus.Approved);
+                    r.Status == RequestStatus.Requested);
         }
 
         public async Task<ProjectRequest> GetRequestByStudentAndTutor(int studentId, int tutorId)
@@ -114,6 +114,17 @@ namespace Infrastructure.Repositories.StudentRepository
 
             return lastFinal == null || lastFinal.IsReviewed;
         }
+
+
+        public async Task<ProjectRequest> GetApprovedRequestByStudentAndTutor(int studentId, int tutorId)
+        {
+            return await _context.ProjectRequests
+                .FirstOrDefaultAsync(r =>
+                    r.StudentId == studentId &&
+                    r.TutorId == tutorId &&
+                    r.Status == RequestStatus.Approved); // ✅ ensure this enum matches your status system
+        }
+
     }
 
 

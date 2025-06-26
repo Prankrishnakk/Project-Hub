@@ -1,5 +1,6 @@
 ﻿using Application.Dto;
 using Application.Interface.StudentInterface;
+using Domain.Model;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -33,7 +34,8 @@ namespace Infrastructure.Repositories.StudentRepository
             {
                 GroupName = group.GroupName,
                 MemberNames = group.Students.Select(s => s.Name).ToList(),
-                ProjectTitles = new List<string> { group.ProjectTitle }
+                ProjectId = group.Id,
+              
             };
         }
     }

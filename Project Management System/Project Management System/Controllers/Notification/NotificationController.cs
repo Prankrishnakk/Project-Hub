@@ -37,11 +37,5 @@ namespace ProjectHub.Controllers.Common
         }
 
         
-        [HttpPut("read/{id}")]
-        public async Task<IActionResult> MarkAsRead(int id)
-        {
-            await _notificationService.MarkAsRead(id);
-            return Ok(new { Message = "Marked as read." });
-        }
     }
 }

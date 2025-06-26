@@ -20,7 +20,7 @@ namespace Application.Interface.StudentInterface
         Task<List<ProjectRequest>> GetReviewedRequestsByStudentId(int studentId);
         Task<ProjectRequest> GetPendingRequestByStudentAndTutor(int studentId, int tutorId);
         Task<bool> GetUnreviewedProjectSubmissions(int studentId);
-
+        Task<ProjectRequest> GetApprovedRequestByStudentAndTutor(int studentId, int tutorId);
         Task<bool> HasReviewedLastFinalProject(int studentId);
         Task<Student?> GetStudentWithGroup(int studentId);
         Task Add(StudentProject project);

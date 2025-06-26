@@ -26,7 +26,6 @@ namespace Application.Services.HodService
                 {
                     GroupId = g.Id,
                     GroupName = g.GroupName,
-                    ProjectTitle = g.ProjectTitle,
                     TutorName = g.Tutor?.Name ?? "Unknown",
                     StudentNames = g.Students.Select(s => s.Name).ToList()
                 }).ToList();
@@ -47,7 +46,6 @@ namespace Application.Services.HodService
                 {
                     ProjectId = p.Id,
                     GroupName = p.GroupName,
-                    ProjectTitle = p.ProjectTitle,
                     TutorName = p.Tutor?.Name ?? "Unknown",
                     StudentNames = p.Students.Select(s => s.Name).ToList()
                 }).ToList();

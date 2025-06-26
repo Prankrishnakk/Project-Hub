@@ -11,6 +11,5 @@ namespace Application.Interface.NotificationInterface
     {
         Task SendNotification(int recipientId, string title, string message);
         Task<ICollection<NotificationDto>> GetUserNotifications(int userId);
-        Task MarkAsRead(int notificationId);
     }
 }

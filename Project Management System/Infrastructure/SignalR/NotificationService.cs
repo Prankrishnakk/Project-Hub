@@ -53,14 +53,6 @@ namespace Application.Services.SignalR
             }).ToList();
         }
     
-        public async Task MarkAsRead(int notificationId)
-        {
-            var notification = await _repository.GetById(notificationId);
-            if (notification != null)
-            {
-                notification.IsRead = true;
-                await _repository.SaveChanges();
-            }
-        }
+      
     }
 }

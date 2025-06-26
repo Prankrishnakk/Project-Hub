@@ -107,8 +107,6 @@ namespace Application.Services.TutorService
                 if (!string.IsNullOrWhiteSpace(dto.GroupName))
                     existingGroup.GroupName = dto.GroupName;
 
-                if (!string.IsNullOrWhiteSpace(dto.ProjectTitle))
-                    existingGroup.ProjectTitle = dto.ProjectTitle;
 
                 existingGroup.TutorId = tutorId;
 

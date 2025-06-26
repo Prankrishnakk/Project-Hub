@@ -125,8 +125,7 @@ namespace Application.Services.StudentServices
                 if (!tutorId.HasValue)
                     return new ApiResponse<string>(null, "Tutor not assigned to the student's group.", false);
 
-                // ✅ Must have an approved request
-                var approvedRequest = await _repository.GetPendingRequestByStudentAndTutor(studentId, tutorId.Value);
+                var approvedRequest = await _repository.GetApprovedRequestByStudentAndTutor(studentId, tutorId.Value);
                 if (approvedRequest == null)
                     return new ApiResponse<string>(null, "You can only upload final project after your request is approved.", false);
 
